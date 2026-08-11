@@ -1,5 +1,6 @@
 {
   "name": "swipe-menu-example",
+  "description": "A focused Expo example for a display-like swipe menu with Reanimated.",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
@@ -7,6 +8,7 @@
     "expo-constants": "~57.0.10",
     "expo-device": "~57.0.1",
     "expo-font": "~57.0.1",
+    "expo-glass-effect": "~57.0.1",
     "expo-image": "~57.0.2",
     "expo-linking": "~57.0.5",
     "expo-router": "~57.0.12",

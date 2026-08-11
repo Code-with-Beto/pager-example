@@ -9,12 +9,7 @@ import {
   withSpring,
 } from "react-native-reanimated";
 
-import {
-  SWIPE_GESTURE,
-  SWIPE_MENU_ANIMATION,
-  SWIPE_MENU_SURFACE_CORNER_RADIUS,
-  SWIPE_SPRING,
-} from "../constants";
+import { SWIPE_GESTURE, SWIPE_MENU_REVEAL, SWIPE_SPRING } from "../constants";
 
 type SwipeEndState = {
   currentPosition: number;
@@ -48,9 +43,7 @@ function shouldOpenMenu({
     return projectedDirection > 0;
   }
 
-  return (
-    currentPosition > menuWidth * SWIPE_GESTURE.openPositionThreshold
-  );
+  return currentPosition > menuWidth * SWIPE_GESTURE.openPositionThreshold;
 }
 
 export function useSwipeMenu(menuWidth: number) {
@@ -115,7 +108,11 @@ export function useSwipeMenu(menuWidth: number) {
     [gestureStartX, menuWidth, translateX],
   );
 
-  const menuAnimatedStyle = useAnimatedStyle(() => {
+  const mainAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  const menuContentAnimatedStyle = useAnimatedStyle(() => {
     const progress = translateX.value / menuWidth;
 
     return {
@@ -123,8 +120,8 @@ export function useSwipeMenu(menuWidth: number) {
         progress,
         [
           0,
-          SWIPE_MENU_ANIMATION.menuFadeStartProgress,
-          SWIPE_MENU_ANIMATION.menuFadeEndProgress,
+          SWIPE_MENU_REVEAL.fadeStartProgress,
+          SWIPE_MENU_REVEAL.fadeEndProgress,
         ],
         [0, 0, 1],
         Extrapolation.CLAMP,
@@ -134,7 +131,7 @@ export function useSwipeMenu(menuWidth: number) {
           translateY: interpolate(
             progress,
             [0, 1],
-            [SWIPE_MENU_ANIMATION.menuStartVerticalOffset, 0],
+            [SWIPE_MENU_REVEAL.startVerticalOffset, 0],
             Extrapolation.CLAMP,
           ),
         },
@@ -142,7 +139,7 @@ export function useSwipeMenu(menuWidth: number) {
           scale: interpolate(
             progress,
             [0, 1],
-            [SWIPE_MENU_ANIMATION.menuStartScale, 1],
+            [SWIPE_MENU_REVEAL.startScale, 1],
             Extrapolation.CLAMP,
           ),
         },
@@ -150,29 +147,51 @@ export function useSwipeMenu(menuWidth: number) {
     };
   });
 
-  const mainAnimatedStyle = useAnimatedStyle(() => ({
-    borderRadius: interpolate(
-      translateX.value / menuWidth,
-      [0, 1],
-      [0, SWIPE_MENU_SURFACE_CORNER_RADIUS],
-    ),
-    transform: [{ translateX: translateX.value }],
-  }));
+  const menuDockAnimatedStyle = useAnimatedStyle(() => {
+    const progress = translateX.value / menuWidth;
 
-  const clippedSurfaceAnimatedStyle = useAnimatedStyle(() => ({
-    borderRadius: interpolate(
-      translateX.value / menuWidth,
-      [0, 1],
-      [0, SWIPE_MENU_SURFACE_CORNER_RADIUS],
-    ),
-  }));
+    return {
+      opacity: interpolate(
+        progress,
+        [
+          0,
+          SWIPE_MENU_REVEAL.fadeStartProgress,
+          SWIPE_MENU_REVEAL.fadeEndProgress,
+        ],
+        [
+          SWIPE_MENU_REVEAL.glassSafeStartOpacity,
+          SWIPE_MENU_REVEAL.glassSafeStartOpacity,
+          1,
+        ],
+        Extrapolation.CLAMP,
+      ),
+      transform: [
+        {
+          translateY: interpolate(
+            progress,
+            [0, 1],
+            [SWIPE_MENU_REVEAL.startVerticalOffset, 0],
+            Extrapolation.CLAMP,
+          ),
+        },
+        {
+          scale: interpolate(
+            progress,
+            [0, 1],
+            [SWIPE_MENU_REVEAL.startScale, 1],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    };
+  });
 
   return {
     animateMenu,
-    clippedSurfaceAnimatedStyle,
     isMenuOpen,
     mainAnimatedStyle,
-    menuAnimatedStyle,
+    menuContentAnimatedStyle,
+    menuDockAnimatedStyle,
     swipeGesture,
   };
 }

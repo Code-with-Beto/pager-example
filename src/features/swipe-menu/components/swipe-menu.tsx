@@ -1,42 +1,72 @@
+import {
+  GlassContainer,
+  GlassView,
+  isGlassEffectAPIAvailable,
+  isLiquidGlassAvailable,
+} from "expo-glass-effect";
 import { Image } from "expo-image";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SymbolView } from "expo-symbols";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  type ViewStyle,
+} from "react-native";
+import Animated, { type AnimatedStyle } from "react-native-reanimated";
 
 import { PROFILE, SWIPE_MENU_LAYOUT } from "../constants";
-import type { Chat, ColorPalette } from "../types";
+import type { Chat, ColorPalette, CourseLesson, Offering } from "../types";
 
 type SwipeMenuProps = {
   chats: readonly Chat[];
   colors: ColorPalette;
+  contentAnimatedStyle: AnimatedStyle<ViewStyle>;
+  dockAnimatedStyle: AnimatedStyle<ViewStyle>;
+  lessons: readonly CourseLesson[];
   menuWidth: number;
+  offerings: readonly Offering[];
   onNewChat: () => void;
   onProfilePress: () => void;
-  onSelectChat: (chatId: string) => void;
+  onSelectContent: (contentId: string) => void;
   safeAreaBottom: number;
   safeAreaTop: number;
-  selectedChatId: string | null;
+  selectedContentId: string | null;
 };
+
+const SUPPORTS_LIQUID_GLASS =
+  Platform.OS === "ios" &&
+  isGlassEffectAPIAvailable() &&
+  isLiquidGlassAvailable();
 
 export function SwipeMenu({
   chats,
   colors,
+  contentAnimatedStyle,
+  dockAnimatedStyle,
+  lessons,
   menuWidth,
+  offerings,
   onNewChat,
   onProfilePress,
-  onSelectChat,
+  onSelectContent,
   safeAreaBottom,
   safeAreaTop,
-  selectedChatId,
+  selectedContentId,
 }: SwipeMenuProps) {
+  const dockBottom = Math.max(
+    safeAreaBottom,
+    SWIPE_MENU_LAYOUT.minimumSafeAreaPadding,
+  );
+
   return (
     <View
       style={[
         styles.menu,
         {
           backgroundColor: colors.menuBackground,
-          paddingBottom: Math.max(
-            safeAreaBottom,
-            SWIPE_MENU_LAYOUT.minimumSafeAreaPadding,
-          ),
           paddingTop: Math.max(
             safeAreaTop,
             SWIPE_MENU_LAYOUT.minimumSafeAreaPadding,
@@ -45,154 +75,358 @@ export function SwipeMenu({
         },
       ]}
     >
-      <Text selectable style={[styles.title, { color: colors.text }]}>
-        Recent chats
-      </Text>
+      <Animated.View style={[styles.menuBody, contentAnimatedStyle]}>
+        <Text selectable style={[styles.title, { color: colors.text }]}>
+          CWB
+        </Text>
 
-      <ScrollView
-        contentContainerStyle={styles.chatList}
-        contentInsetAdjustmentBehavior="never"
-        showsVerticalScrollIndicator={false}
-        style={styles.chatListScroll}
+        <ScrollView
+          contentContainerStyle={styles.menuContent}
+          contentInsetAdjustmentBehavior="never"
+          showsVerticalScrollIndicator={false}
+          style={styles.menuScroll}
+        >
+          <SectionTitle colors={colors}>Explore</SectionTitle>
+          {offerings.map((offering) => {
+            const selected = offering.id === selectedContentId;
+
+            return (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                key={offering.id}
+                onPress={() => onSelectContent(offering.id)}
+                style={({ pressed }) => [
+                  styles.offeringRow,
+                  selected && { backgroundColor: colors.menuSelected },
+                  pressed && styles.pressed,
+                ]}
+              >
+                <SymbolView
+                  name={offering.icon}
+                  size={24}
+                  tintColor={colors.text}
+                />
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.offeringTitle,
+                    (offering.id === "cwb-mcp" || offering.id === "youtube") &&
+                      styles.offeringTitleSemibold,
+                    { color: colors.text },
+                  ]}
+                >
+                  {offering.title}
+                </Text>
+              </Pressable>
+            );
+          })}
+
+          <SectionTitle colors={colors}>Course lessons</SectionTitle>
+          {lessons.map((lesson) => {
+            const selected = lesson.id === selectedContentId;
+
+            return (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                key={lesson.id}
+                onPress={() => onSelectContent(lesson.id)}
+                style={({ pressed }) => [
+                  styles.lessonRow,
+                  selected && { backgroundColor: colors.menuSelected },
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={[styles.lessonTitle, { color: colors.text }]}
+                >
+                  {lesson.title}
+                </Text>
+                <Text style={[styles.minutes, { color: colors.muted }]}>
+                  {lesson.minutes} min
+                </Text>
+              </Pressable>
+            );
+          })}
+
+          <SectionTitle colors={colors}>Recents</SectionTitle>
+          {chats.map((chat) => {
+            const selected = chat.id === selectedContentId;
+
+            return (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                key={chat.id}
+                onPress={() => onSelectContent(chat.id)}
+                style={({ pressed }) => [
+                  styles.chatRow,
+                  selected && { backgroundColor: colors.menuSelected },
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={[styles.chatRowText, { color: colors.text }]}
+                >
+                  {chat.title}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      </Animated.View>
+
+      <Animated.View
+        pointerEvents="box-none"
+        style={[
+          styles.actionDock,
+          {
+            bottom: dockBottom,
+            left: SWIPE_MENU_LAYOUT.horizontalPadding,
+            right: SWIPE_MENU_LAYOUT.horizontalPadding,
+          },
+          dockAnimatedStyle,
+        ]}
       >
-        {chats.map((chat) => {
-          const selected = chat.id === selectedChatId;
-
-          return (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-              key={chat.id}
-              onPress={() => onSelectChat(chat.id)}
-              style={({ pressed }) => [
-                styles.chatRow,
-                selected && { backgroundColor: colors.menuSelected },
-                pressed && styles.pressed,
+        {SUPPORTS_LIQUID_GLASS ? (
+          <GlassContainer
+            spacing={SWIPE_MENU_LAYOUT.actionDockSpacing}
+            style={styles.actionRow}
+          >
+            <GlassView
+              colorScheme="auto"
+              glassEffectStyle="regular"
+              isInteractive
+              style={styles.newChatSurface}
+              tintColor={colors.accent}
+            >
+              <NewChatButton colors={colors} onPress={onNewChat} />
+            </GlassView>
+            <GlassView
+              colorScheme="auto"
+              glassEffectStyle="regular"
+              isInteractive
+              style={styles.profileSurface}
+            >
+              <ProfileButton onPress={onProfilePress} />
+            </GlassView>
+          </GlassContainer>
+        ) : (
+          <View style={styles.actionRow}>
+            <View
+              style={[
+                styles.newChatSurface,
+                { backgroundColor: colors.accent },
               ]}
             >
-              <Text
-                numberOfLines={1}
-                style={[styles.chatRowText, { color: colors.text }]}
-              >
-                {chat.title}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
-
-      <View style={[styles.actions, { borderTopColor: colors.separator }]}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onNewChat}
-          style={({ pressed }) => [
-            styles.newChatButton,
-            { backgroundColor: colors.accent },
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={[styles.newChatLabel, { color: colors.accentText }]}>
-            + New chat
-          </Text>
-        </Pressable>
-
-        <Pressable
-          accessibilityLabel={`Open ${PROFILE.name}'s profile`}
-          accessibilityRole="button"
-          onPress={onProfilePress}
-          style={({ pressed }) => [
-            styles.profileButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Image
-            contentFit="cover"
-            source={{ uri: PROFILE.imageUrl }}
-            style={styles.profileImage}
-            transition={180}
-          />
-          <View style={styles.profileText}>
-            <Text style={[styles.profileName, { color: colors.text }]}>
-              {PROFILE.name}
-            </Text>
-            <Text style={[styles.profileUsername, { color: colors.muted }]}>
-              {PROFILE.username}
-            </Text>
+              <NewChatButton colors={colors} onPress={onNewChat} />
+            </View>
+            <View
+              style={[
+                styles.profileSurface,
+                styles.profileFallback,
+                {
+                  backgroundColor: colors.surfaceBackground,
+                  borderColor: colors.separator,
+                },
+              ]}
+            >
+              <ProfileButton onPress={onProfilePress} />
+            </View>
           </View>
-        </Pressable>
-      </View>
+        )}
+      </Animated.View>
     </View>
+  );
+}
+
+function SectionTitle({
+  children,
+  colors,
+}: {
+  children: string;
+  colors: ColorPalette;
+}) {
+  return (
+    <Text selectable style={[styles.sectionTitle, { color: colors.text }]}>
+      {children}
+    </Text>
+  );
+}
+
+function NewChatButton({
+  colors,
+  onPress,
+}: {
+  colors: ColorPalette;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.newChatButton, pressed && styles.pressed]}
+    >
+      <SymbolView
+        name={{
+          ios: "square.and.pencil",
+          android: "add_comment",
+          web: "add_comment",
+        }}
+        size={20}
+        tintColor={colors.accentText}
+      />
+      <Text style={[styles.newChatLabel, { color: colors.accentText }]}>
+        New chat
+      </Text>
+    </Pressable>
+  );
+}
+
+function ProfileButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityLabel={`Open ${PROFILE.name}'s profile`}
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.profileButton, pressed && styles.pressed]}
+    >
+      <Image
+        contentFit="cover"
+        source={{ uri: PROFILE.imageUrl }}
+        style={styles.profileImage}
+        transition={180}
+      />
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   menu: {
     flex: 1,
-    gap: 16,
     paddingHorizontal: SWIPE_MENU_LAYOUT.horizontalPadding,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    letterSpacing: -0.7,
-    minHeight: 44,
-    textAlignVertical: "center",
-  },
-  chatListScroll: {
+  menuBody: {
     flex: 1,
   },
-  chatList: {
-    gap: 4,
+  title: {
+    fontSize: 30,
+    fontWeight: "700",
+    letterSpacing: -1,
+    paddingBottom: 14,
+  },
+  menuScroll: {
+    flex: 1,
+  },
+  menuContent: {
+    paddingBottom: SWIPE_MENU_LAYOUT.scrollBottomPadding,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    letterSpacing: -0.2,
+    paddingBottom: 7,
+    paddingHorizontal: 8,
+    paddingTop: 18,
+  },
+  offeringRow: {
+    alignItems: "center",
+    borderCurve: "continuous",
+    borderRadius: 14,
+    flexDirection: "row",
+    gap: 14,
+    minHeight: 52,
+    paddingHorizontal: 10,
+  },
+  offeringTitle: {
+    flex: 1,
+    fontSize: 17,
+    fontWeight: "400",
+    letterSpacing: -0.25,
+  },
+  offeringTitleSemibold: {
+    fontWeight: "600",
+  },
+  lessonRow: {
+    alignItems: "center",
+    borderCurve: "continuous",
+    borderRadius: 14,
+    flexDirection: "row",
+    gap: 10,
+    minHeight: 50,
+    paddingHorizontal: 10,
+  },
+  lessonTitle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "400",
+    letterSpacing: -0.2,
+  },
+  minutes: {
+    fontSize: 13,
+    fontVariant: ["tabular-nums"],
   },
   chatRow: {
     borderCurve: "continuous",
     borderRadius: 12,
     justifyContent: "center",
-    minHeight: 46,
-    paddingHorizontal: 12,
+    minHeight: 44,
+    paddingHorizontal: 10,
   },
   chatRowText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "500",
   },
-  actions: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    gap: 10,
-    paddingTop: 16,
+  actionDock: {
+    position: "absolute",
+  },
+  actionRow: {
+    flexDirection: "row",
+    gap: SWIPE_MENU_LAYOUT.actionDockSpacing,
+    height: SWIPE_MENU_LAYOUT.actionDockHeight,
+    width: "100%",
+  },
+  newChatSurface: {
+    borderCurve: "continuous",
+    borderRadius: 999,
+    flex: 1,
+    overflow: "hidden",
   },
   newChatButton: {
     alignItems: "center",
-    borderCurve: "continuous",
-    borderRadius: 14,
+    flex: 1,
+    flexDirection: "row",
+    gap: 9,
     justifyContent: "center",
-    minHeight: 48,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
   },
   newChatLabel: {
     fontSize: 16,
     fontWeight: "600",
   },
+  profileSurface: {
+    borderCurve: "continuous",
+    borderRadius: 999,
+    height: SWIPE_MENU_LAYOUT.actionDockHeight,
+    overflow: "hidden",
+    width: SWIPE_MENU_LAYOUT.actionDockHeight,
+  },
+  profileFallback: {
+    borderWidth: StyleSheet.hairlineWidth,
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.1)",
+  },
   profileButton: {
     alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 54,
+    flex: 1,
+    justifyContent: "center",
   },
   profileImage: {
-    borderRadius: 20,
-    height: 40,
-    width: 40,
-  },
-  profileText: {
-    flex: 1,
-    gap: 2,
-  },
-  profileName: {
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  profileUsername: {
-    fontSize: 13,
+    borderRadius: 22,
+    height: 44,
+    width: 44,
   },
   pressed: {
     opacity: 0.55,

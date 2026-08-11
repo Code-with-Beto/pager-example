@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Swipe Menu Example",
+    "name": "CWB Swipe Menu",
     "slug": "swipe-menu-example",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -18,8 +18,6 @@
       },
       "package": "com.cwbbeto.swipemenuexample"
     },
-    "plugins": [
-      "expo-router"
-    ]
+    "plugins": ["expo-router"]
   }
 }

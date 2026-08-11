@@ -1,10 +1,12 @@
+import * as WebBrowser from "expo-web-browser";
+import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import type { Chat, ColorPalette } from "../types";
+import type { ColorPalette, MenuContent } from "../types";
 
 type SwipeMenuSurfaceProps = {
-  chat?: Chat;
   colors: ColorPalette;
+  content?: MenuContent;
   isMenuOpen: boolean;
   onOpenMenu: () => void;
   safeAreaBottom: number;
@@ -12,8 +14,8 @@ type SwipeMenuSurfaceProps = {
 };
 
 export function SwipeMenuSurface({
-  chat,
   colors,
+  content,
   isMenuOpen,
   onOpenMenu,
   safeAreaBottom,
@@ -44,15 +46,19 @@ export function SwipeMenuSurface({
             pressed && styles.pressed,
           ]}
         >
-          <Text style={[styles.menuGlyph, { color: colors.text }]}>☰</Text>
+          <SymbolView
+            name={{ ios: "line.3.horizontal", android: "menu", web: "menu" }}
+            size={21}
+            tintColor={colors.text}
+          />
         </Pressable>
 
         <View style={styles.titleGroup}>
           <Text selectable style={[styles.title, { color: colors.text }]}>
-            Swipe Menu
+            CWB
           </Text>
           <Text selectable style={[styles.subtitle, { color: colors.muted }]}>
-            Swipe right to open
+            Swipe right for the menu
           </Text>
         </View>
 
@@ -67,46 +73,109 @@ export function SwipeMenuSurface({
         contentInsetAdjustmentBehavior="never"
         showsVerticalScrollIndicator={false}
       >
-        {chat ? (
-          <View style={styles.conversation}>
-            <Text
-              selectable
-              style={[styles.conversationTitle, { color: colors.text }]}
-            >
-              {chat.title}
-            </Text>
-            <View
-              style={[
-                styles.userMessage,
-                { backgroundColor: colors.userBubble },
-              ]}
-            >
+        {content ? (
+          content.kind === "chat" ? (
+            <View style={styles.conversation}>
+              <Text
+                selectable
+                style={[styles.conversationTitle, { color: colors.text }]}
+              >
+                {content.title}
+              </Text>
+              <View
+                style={[
+                  styles.userMessage,
+                  { backgroundColor: colors.userBubble },
+                ]}
+              >
+                <Text
+                  selectable
+                  style={[styles.messageText, { color: colors.text }]}
+                >
+                  {content.prompt}
+                </Text>
+              </View>
               <Text
                 selectable
                 style={[styles.messageText, { color: colors.text }]}
               >
-                {chat.prompt}
+                {content.response}
               </Text>
+            </View>
+          ) : (
+            <View style={styles.resource}>
+              <Text style={[styles.eyebrow, { color: colors.accent }]}>
+                {content.kind === "lesson"
+                  ? `COURSE LESSON · ${content.minutes} MIN`
+                  : "CODE WITH BETO"}
+              </Text>
+              <Text
+                selectable
+                style={[styles.resourceTitle, { color: colors.text }]}
+              >
+                {content.title}
+              </Text>
+              <Text
+                selectable
+                style={[styles.resourceDescription, { color: colors.muted }]}
+              >
+                {content.description}
+              </Text>
+              <Pressable
+                accessibilityRole="link"
+                onPress={() => void WebBrowser.openBrowserAsync(content.href)}
+                style={({ pressed }) => [
+                  styles.webButton,
+                  { backgroundColor: colors.accent },
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text
+                  style={[styles.webButtonLabel, { color: colors.accentText }]}
+                >
+                  {content.kind === "lesson"
+                    ? "View lesson on the web"
+                    : "Open on the web"}
+                </Text>
+                <SymbolView
+                  name={{
+                    ios: "arrow.up.right",
+                    android: "arrow_outward",
+                    web: "arrow_outward",
+                  }}
+                  size={17}
+                  tintColor={colors.accentText}
+                />
+              </Pressable>
+            </View>
+          )
+        ) : (
+          <View style={styles.emptyState}>
+            <View
+              style={[styles.emptyIcon, { backgroundColor: colors.userBubble }]}
+            >
+              <SymbolView
+                name={{
+                  ios: "hand.draw",
+                  android: "swipe_right",
+                  web: "swipe_right",
+                }}
+                size={30}
+                tintColor={colors.text}
+              />
             </View>
             <Text
               selectable
-              style={[styles.messageText, { color: colors.text }]}
+              style={[styles.emptyTitle, { color: colors.text }]}
             >
-              {chat.response}
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.emptyState}>
-            <Text style={[styles.swipeIcon, { color: colors.text }]}>⇥</Text>
-            <Text selectable style={[styles.emptyTitle, { color: colors.text }]}>
-              Try the swipe menu
+              Explore Code with Beto
             </Text>
             <Text
               selectable
               style={[styles.emptyDescription, { color: colors.muted }]}
             >
-              Swipe right anywhere on this screen to reveal recent chats. Swipe
-              left or tap the dimmed screen to close it.
+              Swipe right to browse courses, templates, lessons, and recent
+              chats. Swipe left or tap this surface to close the menu.
             </Text>
           </View>
         )}
@@ -132,10 +201,6 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     width: 40,
-  },
-  menuGlyph: {
-    fontSize: 21,
-    fontWeight: "500",
   },
   titleGroup: {
     alignItems: "center",
@@ -166,13 +231,20 @@ const styles = StyleSheet.create({
     marginHorizontal: "auto",
     maxWidth: 360,
   },
-  swipeIcon: {
-    fontSize: 42,
+  emptyIcon: {
+    alignItems: "center",
+    borderCurve: "continuous",
+    borderRadius: 28,
+    height: 56,
+    justifyContent: "center",
+    marginBottom: 4,
+    width: 56,
   },
   emptyTitle: {
     fontSize: 26,
     fontWeight: "700",
     letterSpacing: -0.7,
+    textAlign: "center",
   },
   emptyDescription: {
     fontSize: 15,
@@ -202,6 +274,45 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 16,
     lineHeight: 24,
+  },
+  resource: {
+    alignItems: "flex-start",
+    justifyContent: "center",
+    marginHorizontal: "auto",
+    maxWidth: 560,
+    minHeight: 420,
+    width: "100%",
+  },
+  eyebrow: {
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.8,
+    marginBottom: 12,
+  },
+  resourceTitle: {
+    fontSize: 34,
+    fontWeight: "700",
+    letterSpacing: -1.1,
+  },
+  resourceDescription: {
+    fontSize: 17,
+    lineHeight: 25,
+    maxWidth: 480,
+    paddingTop: 14,
+  },
+  webButton: {
+    alignItems: "center",
+    borderCurve: "continuous",
+    borderRadius: 999,
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 28,
+    minHeight: 48,
+    paddingHorizontal: 19,
+  },
+  webButtonLabel: {
+    fontSize: 15,
+    fontWeight: "600",
   },
   pressed: {
     opacity: 0.45,
