@@ -64,7 +64,7 @@ const palettes = {
     menuSelected: "#dededb",
     muted: "#6f6f6a",
     separator: "rgba(20, 20, 18, 0.09)",
-    shadow: "rgba(0, 0, 0, 0.24)",
+    surfaceBorder: "transparent",
     text: "#171714",
     userBubble: "#ededeb",
   },
@@ -78,7 +78,7 @@ const palettes = {
     menuSelected: "#2b2b2b",
     muted: "#a9a9a3",
     separator: "rgba(255, 255, 255, 0.09)",
-    shadow: "rgba(0, 0, 0, 0.72)",
+    surfaceBorder: "rgba(255, 255, 255, 0.1)",
     text: "#f5f5f0",
     userBubble: "#303030",
   },
@@ -108,6 +108,12 @@ export default function DrawerPagerExample() {
       : themePreference;
   const colors = palettes[colorScheme];
   const drawerWidth = width * 0.76;
+  const surfaceCornerRadius =
+    process.env.EXPO_OS === "ios"
+      ? insets.top >= 44
+        ? Math.min(54, Math.round(insets.top * 0.82))
+        : 18
+      : 28;
   const translateX = useSharedValue(0);
   const gestureStartX = useSharedValue(0);
   const previousDrawerWidth = useRef(drawerWidth);
@@ -181,13 +187,17 @@ export default function DrawerPagerExample() {
     const progress = translateX.value / drawerWidth;
 
     return {
-      borderRadius: interpolate(progress, [0, 1], [0, 24]),
+      borderRadius: interpolate(progress, [0, 1], [0, surfaceCornerRadius]),
       transform: [{ translateX: translateX.value }],
     };
   });
 
   const clippedSurfaceAnimatedStyle = useAnimatedStyle(() => ({
-    borderRadius: interpolate(translateX.value / drawerWidth, [0, 1], [0, 24]),
+    borderRadius: interpolate(
+      translateX.value / drawerWidth,
+      [0, 1],
+      [0, surfaceCornerRadius],
+    ),
   }));
 
   const scrimAnimatedStyle = useAnimatedStyle(() => ({
@@ -195,158 +205,165 @@ export default function DrawerPagerExample() {
   }));
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.appBackground }]}>
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+    <GestureDetector gesture={panGesture}>
+      <View style={[styles.root, { backgroundColor: colors.appBackground }]}>
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
 
-      <Animated.View
-        accessibilityElementsHidden={!drawerOpen}
-        importantForAccessibility={drawerOpen ? "auto" : "no-hide-descendants"}
-        pointerEvents={drawerOpen ? "auto" : "none"}
-        style={[StyleSheet.absoluteFill, menuAnimatedStyle]}
-      >
-        <View
-          style={[
-            styles.drawer,
-            {
-              backgroundColor: colors.menuBackground,
-              paddingBottom: Math.max(insets.bottom, 16),
-              paddingTop: Math.max(insets.top, 16),
-              width: drawerWidth,
-            },
-          ]}
+        <Animated.View
+          accessibilityElementsHidden={!drawerOpen}
+          importantForAccessibility={
+            drawerOpen ? "auto" : "no-hide-descendants"
+          }
+          pointerEvents={drawerOpen ? "auto" : "none"}
+          style={[StyleSheet.absoluteFill, menuAnimatedStyle]}
         >
-          <View style={styles.drawerHeader}>
-            <Text
-              selectable
-              style={[styles.drawerTitle, { color: colors.text }]}
-            >
-              Chats
-            </Text>
-            <Pressable
-              accessibilityLabel="Search chats"
-              accessibilityRole="button"
-              hitSlop={10}
-              style={({ pressed }) => [
-                styles.iconButton,
-                { opacity: pressed ? 0.5 : 1 },
-              ]}
-            >
-              <View style={[styles.searchCircle, { borderColor: colors.text }]}>
-                <View
-                  style={[
-                    styles.searchHandle,
-                    { backgroundColor: colors.text },
-                  ]}
-                />
-              </View>
-            </Pressable>
-          </View>
-
-          <Host
-            colorScheme={colorScheme}
-            matchContents={{ vertical: true }}
-            seedColor={colors.accent}
-            style={{ width: drawerWidth - 40 }}
-          >
-            <Button
-              label="New chat"
-              onPress={() => selectChat(null)}
-              style={{ width: drawerWidth - 40 }}
-            />
-          </Host>
-
-          <Text
-            selectable
-            style={[styles.sectionLabel, { color: colors.muted }]}
-          >
-            RECENT
-          </Text>
-
-          <ScrollView
-            contentContainerStyle={styles.chatList}
-            contentInsetAdjustmentBehavior="never"
-            showsVerticalScrollIndicator={false}
-            style={styles.chatListScroll}
-          >
-            {chats.map((chat) => {
-              const selected = chat.id === selectedChatId;
-
-              return (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  key={chat.id}
-                  onPress={() => selectChat(chat.id)}
-                  style={({ pressed }) => [
-                    styles.chatRow,
-                    selected && { backgroundColor: colors.menuSelected },
-                    pressed && { opacity: 0.55 },
-                  ]}
-                >
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.chatRowText, { color: colors.text }]}
-                  >
-                    {chat.title}
-                  </Text>
-                  <Text style={[styles.ellipsis, { color: colors.muted }]}>
-                    •••
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-
           <View
-            style={[styles.appearanceRow, { borderTopColor: colors.separator }]}
+            style={[
+              styles.drawer,
+              {
+                backgroundColor: colors.menuBackground,
+                paddingBottom: Math.max(insets.bottom, 16),
+                paddingTop: Math.max(insets.top, 16),
+                width: drawerWidth,
+              },
+            ]}
           >
+            <View style={styles.drawerHeader}>
+              <Text
+                selectable
+                style={[styles.drawerTitle, { color: colors.text }]}
+              >
+                Chats
+              </Text>
+              <Pressable
+                accessibilityLabel="Search chats"
+                accessibilityRole="button"
+                hitSlop={10}
+                style={({ pressed }) => [
+                  styles.iconButton,
+                  { opacity: pressed ? 0.5 : 1 },
+                ]}
+              >
+                <View
+                  style={[styles.searchCircle, { borderColor: colors.text }]}
+                >
+                  <View
+                    style={[
+                      styles.searchHandle,
+                      { backgroundColor: colors.text },
+                    ]}
+                  />
+                </View>
+              </Pressable>
+            </View>
+
             <Host
               colorScheme={colorScheme}
               matchContents={{ vertical: true }}
               seedColor={colors.accent}
               style={{ width: drawerWidth - 40 }}
             >
-              <Switch
-                label="Dark appearance"
-                onValueChange={(enabled) =>
-                  setThemePreference(enabled ? "dark" : "light")
-                }
-                value={colorScheme === "dark"}
+              <Button
+                label="New chat"
+                onPress={() => selectChat(null)}
+                style={{ width: drawerWidth - 40 }}
               />
             </Host>
-          </View>
 
-          <View style={styles.accountRow}>
-            <View style={[styles.avatar, { backgroundColor: colors.accent }]}>
-              <Text style={[styles.avatarText, { color: colors.accentText }]}>
-                B
-              </Text>
+            <Text
+              selectable
+              style={[styles.sectionLabel, { color: colors.muted }]}
+            >
+              RECENT
+            </Text>
+
+            <ScrollView
+              contentContainerStyle={styles.chatList}
+              contentInsetAdjustmentBehavior="never"
+              showsVerticalScrollIndicator={false}
+              style={styles.chatListScroll}
+            >
+              {chats.map((chat) => {
+                const selected = chat.id === selectedChatId;
+
+                return (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ selected }}
+                    key={chat.id}
+                    onPress={() => selectChat(chat.id)}
+                    style={({ pressed }) => [
+                      styles.chatRow,
+                      selected && { backgroundColor: colors.menuSelected },
+                      pressed && { opacity: 0.55 },
+                    ]}
+                  >
+                    <Text
+                      numberOfLines={1}
+                      style={[styles.chatRowText, { color: colors.text }]}
+                    >
+                      {chat.title}
+                    </Text>
+                    <Text style={[styles.ellipsis, { color: colors.muted }]}>
+                      •••
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+
+            <View
+              style={[
+                styles.appearanceRow,
+                { borderTopColor: colors.separator },
+              ]}
+            >
+              <Host
+                colorScheme={colorScheme}
+                matchContents={{ vertical: true }}
+                seedColor={colors.accent}
+                style={{ width: drawerWidth - 40 }}
+              >
+                <Switch
+                  label="Dark appearance"
+                  onValueChange={(enabled) =>
+                    setThemePreference(enabled ? "dark" : "light")
+                  }
+                  value={colorScheme === "dark"}
+                />
+              </Host>
             </View>
-            <View style={styles.accountCopy}>
-              <Text
-                selectable
-                style={[styles.accountName, { color: colors.text }]}
-              >
-                Beto
-              </Text>
-              <Text
-                selectable
-                style={[styles.accountPlan, { color: colors.muted }]}
-              >
-                Drawer prototype
-              </Text>
+
+            <View style={styles.accountRow}>
+              <View style={[styles.avatar, { backgroundColor: colors.accent }]}>
+                <Text style={[styles.avatarText, { color: colors.accentText }]}>
+                  B
+                </Text>
+              </View>
+              <View style={styles.accountCopy}>
+                <Text
+                  selectable
+                  style={[styles.accountName, { color: colors.text }]}
+                >
+                  Beto
+                </Text>
+                <Text
+                  selectable
+                  style={[styles.accountPlan, { color: colors.muted }]}
+                >
+                  Drawer prototype
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </Animated.View>
+        </Animated.View>
 
-      <GestureDetector gesture={panGesture}>
         <Animated.View
           style={[
             StyleSheet.absoluteFill,
             styles.mainShadow,
-            {
-              boxShadow: `-14px 0 36px ${colors.shadow}`,
+            colorScheme === "light" && {
+              boxShadow: "-1px 0 12px rgba(0, 0, 0, 0.08)",
             },
             mainAnimatedStyle,
           ]}
@@ -354,7 +371,11 @@ export default function DrawerPagerExample() {
           <Animated.View
             style={[
               styles.chatSurface,
-              { backgroundColor: colors.chatBackground },
+              {
+                backgroundColor: colors.chatBackground,
+                borderColor: colors.surfaceBorder,
+                borderWidth: colorScheme === "dark" ? 1 : 0,
+              },
               clippedSurfaceAnimatedStyle,
             ]}
           >
@@ -489,8 +510,8 @@ export default function DrawerPagerExample() {
             </Animated.View>
           </Animated.View>
         </Animated.View>
-      </GestureDetector>
-    </View>
+      </View>
+    </GestureDetector>
   );
 }
 
@@ -679,9 +700,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   mainShadow: {
+    borderCurve: "continuous",
     zIndex: 2,
   },
   chatSurface: {
+    borderCurve: "continuous",
     flex: 1,
     overflow: "hidden",
   },

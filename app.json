@@ -7,7 +7,8 @@
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.cwb-beto.pager-example"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,6 +18,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       }
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
