@@ -26,7 +26,7 @@ export const CHATS = [
     title: "Weekend in Mexico City",
     prompt: "Plan a relaxed weekend in Mexico City.",
     response:
-      "I’d anchor the weekend around Roma Norte and Condesa, leave one morning for Chapultepec, and keep enough space for long lunches and spontaneous stops.",
+      "I'd anchor the weekend around Roma Norte and Condesa, leave one morning for Chapultepec, and keep enough space for long lunches and spontaneous stops.",
   },
 ] satisfies readonly Chat[];
 
@@ -102,15 +102,15 @@ export const DRAWER_GESTURE = {
 
 export const DRAWER_ANIMATION = {
   menuOpacity: {
-    inputRange: [0, 0.08, 0.36],
+    inputRange: [0, 0.08, 0.5],
     outputRange: [0, 0, 1],
   },
   menuScale: {
-    inputRange: [0, 0.36],
+    inputRange: [0, 1],
     outputRange: [0.975, 1],
   },
   menuTranslateY: {
-    inputRange: [0, 0.36],
+    inputRange: [0, 1],
     outputRange: [8, 0],
   },
   scrimOpacity: {

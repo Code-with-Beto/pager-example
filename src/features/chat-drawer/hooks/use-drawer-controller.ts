@@ -133,7 +133,7 @@ export function useDrawerController({
         {
           translateY: interpolate(
             progress,
-            [0, tuning.menuFadeEndProgress],
+            DRAWER_ANIMATION.menuTranslateY.inputRange,
             [tuning.menuTranslateY, 0],
             Extrapolation.CLAMP,
           ),
@@ -141,7 +141,7 @@ export function useDrawerController({
         {
           scale: interpolate(
             progress,
-            [0, tuning.menuFadeEndProgress],
+            DRAWER_ANIMATION.menuScale.inputRange,
             [tuning.menuMinimumScale, 1],
             Extrapolation.CLAMP,
           ),
