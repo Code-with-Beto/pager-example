@@ -2,6 +2,7 @@
   "expo": {
     "name": "CWB Swipe Menu",
     "slug": "swipe-menu-example",
+    "scheme": "swipe-menu-example",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon-1786462845888.png",

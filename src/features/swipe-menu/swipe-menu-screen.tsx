@@ -97,10 +97,12 @@ export function SwipeMenuScreen() {
 
         <Animated.View style={[StyleSheet.absoluteFill, mainAnimatedStyle]}>
           <ScreenCornerSurface
+            castsShadow
             fallbackRadius={fallbackCornerRadius}
+            fallbackShadow={SWIPE_MENU_SURFACE_SHADOW}
             style={[
               styles.mainShadow,
-              { boxShadow: SWIPE_MENU_SURFACE_SHADOW },
+              { backgroundColor: colors.surfaceBackground },
             ]}
           >
             <ScreenCornerSurface

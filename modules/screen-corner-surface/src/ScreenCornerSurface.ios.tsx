@@ -13,7 +13,9 @@ const NativeScreenCornerSurface = nativeModule
   : null;
 
 export default function ScreenCornerSurface({
+  castsShadow,
   fallbackRadius,
+  fallbackShadow,
   style,
   ...props
 }: ScreenCornerSurfaceProps) {
@@ -21,6 +23,7 @@ export default function ScreenCornerSurface({
     return (
       <NativeScreenCornerSurface
         {...props}
+        castsShadow={castsShadow}
         fallbackRadius={fallbackRadius}
         style={style}
       />
@@ -30,7 +33,14 @@ export default function ScreenCornerSurface({
   return (
     <View
       {...props}
-      style={[styles.fallback, { borderRadius: fallbackRadius }, style]}
+      style={[
+        styles.fallback,
+        { borderRadius: fallbackRadius },
+        castsShadow && fallbackShadow
+          ? { boxShadow: fallbackShadow }
+          : undefined,
+        style,
+      ]}
     />
   );
 }

@@ -178,7 +178,7 @@ export const SWIPE_MENU_WIDTH_RATIO = 0.78;
 export const IOS_LEGACY_SCREEN_CORNER_RADIUS = 55;
 export const ANDROID_SCREEN_CORNER_RADIUS = 32;
 export const WEB_SCREEN_CORNER_RADIUS = 28;
-export const SWIPE_MENU_SURFACE_SHADOW = "-8px 0 32px rgba(0, 0, 0, 0.12)";
+export const SWIPE_MENU_SURFACE_SHADOW = "-8px 0 40px rgba(0, 0, 0, 0.14)";
 
 export const SWIPE_MENU_LAYOUT = {
   actionDockHeight: 58,
@@ -207,7 +207,6 @@ export const SWIPE_SPRING = {
 export const SWIPE_MENU_REVEAL = {
   fadeEndProgress: 0.5,
   fadeStartProgress: 0.08,
-  glassSafeStartOpacity: 0.01,
   startScale: 0.975,
   startVerticalOffset: 8,
 } as const;

@@ -151,20 +151,6 @@ export function useSwipeMenu(menuWidth: number) {
     const progress = translateX.value / menuWidth;
 
     return {
-      opacity: interpolate(
-        progress,
-        [
-          0,
-          SWIPE_MENU_REVEAL.fadeStartProgress,
-          SWIPE_MENU_REVEAL.fadeEndProgress,
-        ],
-        [
-          SWIPE_MENU_REVEAL.glassSafeStartOpacity,
-          SWIPE_MENU_REVEAL.glassSafeStartOpacity,
-          1,
-        ],
-        Extrapolation.CLAMP,
-      ),
       transform: [
         {
           translateY: interpolate(

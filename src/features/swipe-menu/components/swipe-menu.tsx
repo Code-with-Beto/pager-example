@@ -111,8 +111,7 @@ export function SwipeMenu({
                   numberOfLines={1}
                   style={[
                     styles.offeringTitle,
-                    (offering.id === "cwb-mcp" || offering.id === "youtube") &&
-                      styles.offeringTitleSemibold,
+                    styles.offeringTitleSemibold,
                     { color: colors.text },
                   ]}
                 >
