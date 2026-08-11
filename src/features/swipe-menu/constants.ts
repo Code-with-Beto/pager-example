@@ -74,7 +74,6 @@ export const SWIPE_GESTURE = {
   activationDistance: 8,
   directionDistanceThreshold: 12,
   openPositionThreshold: 0.18,
-  openStateThreshold: 0.5,
   velocityInfluence: 0.05,
   velocityThreshold: 160,
   verticalTolerance: 18,

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "pager-example",
+      "name": "swipe-menu-example",
       "dependencies": {
         "expo": "~57.0.12",
         "expo-constants": "~57.0.10",

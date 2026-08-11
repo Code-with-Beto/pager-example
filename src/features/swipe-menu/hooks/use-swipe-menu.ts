@@ -98,9 +98,6 @@ export function useSwipeMenu(menuWidth: number) {
           );
         })
         .onEnd((event) => {
-          const startedOpen =
-            gestureStartX.value >
-            menuWidth * SWIPE_GESTURE.openStateThreshold;
           const shouldOpen = shouldOpenMenu({
             currentPosition: translateX.value,
             menuWidth,
@@ -113,9 +110,7 @@ export function useSwipeMenu(menuWidth: number) {
             SWIPE_SPRING,
           );
 
-          if (shouldOpen !== startedOpen) {
-            runOnJS(setIsMenuOpen)(shouldOpen);
-          }
+          runOnJS(setIsMenuOpen)(shouldOpen);
         }),
     [gestureStartX, menuWidth, translateX],
   );
