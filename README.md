@@ -1,8 +1,18 @@
-# Layered Drawer Gesture Example
+# ChatGPT-Inspired Swipe Menu for React Native
 
-A minimal Expo SDK 57 prototype of the layered drawer interaction used by apps such as ChatGPT. The menu remains mounted underneath the main chat surface while Reanimated and Gesture Handler drive the reveal animation on the UI thread.
+An Expo SDK 57 example of a layered swipe menu inspired by the ChatGPT mobile app, built by [Beto Moedano](https://codewithbeto.dev). Swipe right anywhere on the chat surface to reveal the menu, then swipe left or tap the exposed surface to close it.
 
-This intentionally does not use [`PagerView`](https://docs.expo.dev/versions/v57.0.0/sdk/ui/drop-in-replacements/pagerview/). Pager pages always stretch to fill the viewport, while this interaction needs the chat surface to stop partially onscreen and cast a shadow over the menu. The menu does use universal `@expo/ui` controls for the native new-chat button and appearance switch.
+The menu stays mounted underneath the main chat surface while Reanimated and Gesture Handler drive the interaction on the UI thread. The result is a responsive, interruptible gesture with spring motion, rounded corners, shadows, and light haptic feedback.
+
+## What This Example Covers
+
+- A full-screen pan gesture that opens and closes in either direction
+- A layered drawer that keeps part of the main surface visible
+- Light and dark appearances using native `@expo/ui` controls
+- Liquid Glass actions on supported iOS versions with cross-platform fallbacks
+- Recent-chat selection, safe-area handling, and accessible controls
+
+This intentionally does not use [`PagerView`](https://docs.expo.dev/versions/v57.0.0/sdk/ui/drop-in-replacements/pagerview/). Pager pages always stretch to fill the viewport, while this interaction needs the chat surface to stop partially onscreen and cast a shadow over the menu.
 
 ## Run
 
@@ -13,14 +23,20 @@ bun run ios
 
 Use `bun run android` for Android. Swipe right anywhere on the chat to open the menu. Swipe left or tap the exposed chat surface to close it. Selecting a recent chat loads it and closes the menu.
 
-## Learn React Native with Code with Beto
+## Keep Building with Code with Beto
 
-Build production-ready apps with React Native, Expo, and TypeScript through practical, project-based courses.
+The app icon in this project was generated and configured with the open-source [`app-icon` skill](https://github.com/Code-with-Beto/skills#-app-icon-plugin). It handles the Expo configuration for iOS 26 icons and Android adaptive icons directly from a prompt.
 
-[Explore the React Native courses →](https://cwb.sh/rn?r=github)
+If you build with Codex, Claude, Cursor, or another AI agent, the [Code with Beto MCP](https://codewithbeto.dev/blog/introducing-cwb-mcp) gives Pro members access to course lessons, blog posts, and production templates inside the editor. For example, you can prompt your agent:
 
-Pro members also get real-world app codebases, private GitHub projects, Figma files, and priority Discord support.
+> Use Code with Beto to find the Animations & Gestures lessons, then help me build a swipeable drawer.
+
+AI can help you move faster, but understanding the fundamentals is what lets you debug and ship confidently. The [React Native course](https://cwb.sh/rn?r=github) covers Reanimated, Gesture Handler, swipeable components, Expo Router, native UI, and the full path to the app stores.
+
+Need hands-on help for your app or team? [Contact Beto on LinkedIn](https://www.linkedin.com/in/betomoedano).
 
 ## License
 
 [MIT](LICENSE)
+
+This project is inspired by the interaction pattern in ChatGPT and is not affiliated with or endorsed by OpenAI.
