@@ -1,6 +1,4 @@
-import type { ColorSchemeName } from "react-native";
-
-export type AppColorScheme = Exclude<ColorSchemeName, null | undefined>;
+export type AppColorScheme = "dark" | "light";
 
 export type ThemePreference = "system" | AppColorScheme;
 

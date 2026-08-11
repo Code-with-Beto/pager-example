@@ -17,6 +17,24 @@ bun run ios
 bun run android
 ```
 
+Tap the sliders icon in the chat header to open the live gesture tuner. The controls are grouped by layout, gesture recognition, spring physics, and reveal styling. Tap **Done** to test the gesture, **Reset defaults** to restore the original preset, or **Share values** to export the current configuration as JSON.
+
+Run the static TypeScript check with `bun run typecheck`.
+
+## Project structure
+
+```text
+src/
+├── app/                         # Expo Router route and root layout only
+└── features/chat-drawer/
+    ├── components/              # Focused presentation components
+    ├── hooks/                   # Theme, gesture, and tuning state
+    ├── chat-drawer-screen.tsx   # Feature composition and screen state
+    ├── constants.ts             # Defaults, sample content, and palettes
+    ├── types.ts                 # Shared feature types
+    └── utils.ts                 # Pure calculations and formatting
+```
+
 ## Keep Building with Code with Beto
 
 The app icon in this project was generated and configured with the open-source [`app-icon` skill](https://github.com/Code-with-Beto/skills#-app-icon-plugin). It handles the Expo configuration for iOS 26 icons and Android adaptive icons directly from a prompt.

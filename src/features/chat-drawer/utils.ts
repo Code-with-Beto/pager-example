@@ -1,4 +1,5 @@
 import { DRAWER_LAYOUT } from "./constants";
+import type { ColorSchemeName } from "react-native";
 import type {
   AppColorScheme,
   DrawerEndState,
@@ -9,7 +10,7 @@ import type {
 
 export function resolveColorScheme(
   preference: ThemePreference,
-  systemColorScheme: AppColorScheme | null | undefined,
+  systemColorScheme: ColorSchemeName,
 ): AppColorScheme {
   if (preference !== "system") {
     return preference;
