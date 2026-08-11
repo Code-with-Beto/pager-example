@@ -1,3 +1,3 @@
-import { ChatDrawerScreen } from "@/features/chat-drawer";
+import { SwipeMenuScreen } from "@/features/swipe-menu";
 
-export default ChatDrawerScreen;
+export default SwipeMenuScreen;

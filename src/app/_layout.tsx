@@ -1,37 +1,29 @@
 import { Stack } from "expo-router/stack";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { KeyboardProvider } from "react-native-keyboard-controller";
 
-import {
-  AppThemeProvider,
-  useTheme,
-} from "@/features/chat-drawer/providers/theme-provider";
+import { useAppTheme } from "@/features/swipe-menu/hooks/use-app-theme";
 
 const ROOT_STYLE = { flex: 1 } as const;
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={ROOT_STYLE}>
-      <KeyboardProvider>
-        <AppThemeProvider>
-          <RootNavigator />
-        </AppThemeProvider>
-      </KeyboardProvider>
+      <RootNavigator />
     </GestureHandlerRootView>
   );
 }
 
 function RootNavigator() {
-  const { colorScheme, colors } = useTheme();
+  const { colorScheme, colors } = useAppTheme();
 
   return (
     <>
       <Stack
         screenOptions={{
-          contentStyle: { backgroundColor: colors.chatBackground },
+          contentStyle: { backgroundColor: colors.surfaceBackground },
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: colors.chatBackground },
+          headerStyle: { backgroundColor: colors.surfaceBackground },
           headerTintColor: colors.text,
         }}
       >

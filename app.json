@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Pager View Example",
-    "slug": "pager-example",
+    "name": "Swipe Menu Example",
+    "slug": "swipe-menu-example",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon-1786462845888.png",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/app-icon.icon",
-      "bundleIdentifier": "com.cwb-beto.pager-example"
+      "bundleIdentifier": "com.cwb-beto.swipe-menu-example"
     },
     "android": {
       "adaptiveIcon": {
@@ -16,7 +16,7 @@
         "backgroundImage": "./assets/icon-1786462845888.png",
         "monochromeImage": "./assets/icon-1786462845888.png"
       },
-      "package": "com.cwbbeto.pagerexample"
+      "package": "com.cwbbeto.swipemenuexample"
     },
     "plugins": [
       "expo-router"

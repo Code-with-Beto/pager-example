@@ -1,3 +1,3 @@
-import { ProfileScreen } from "@/features/chat-drawer/profile-screen";
+import { ProfileScreen } from "@/features/swipe-menu/profile-screen";
 
 export default ProfileScreen;
