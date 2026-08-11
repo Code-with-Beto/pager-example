@@ -1,20 +1,33 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { KeyboardChatScrollView } from "react-native-keyboard-controller";
 
 import { EMPTY_CHAT_SUGGESTIONS } from "../constants";
 import type { Chat, ColorPalette } from "../types";
 
 type ChatContentProps = {
+  bottomPadding: number;
   chat?: Chat;
   colors: ColorPalette;
 };
 
-export function ChatContent({ chat, colors }: ChatContentProps) {
+export function ChatContent({
+  bottomPadding,
+  chat,
+  colors,
+}: ChatContentProps) {
   if (!chat) {
     return (
-      <ScrollView
-        contentContainerStyle={styles.emptyContent}
+      <KeyboardChatScrollView
+        contentContainerStyle={[
+          styles.emptyContent,
+          { paddingBottom: bottomPadding },
+        ]}
         contentInsetAdjustmentBehavior="never"
+        keyboardDismissMode="interactive"
+        keyboardLiftBehavior="whenAtEnd"
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        style={styles.scroll}
       >
         <View style={[styles.mark, { borderColor: colors.separator }]}>
           <Text style={[styles.markText, { color: colors.text }]}>✦</Text>
@@ -38,15 +51,22 @@ export function ChatContent({ chat, colors }: ChatContentProps) {
             </View>
           ))}
         </View>
-      </ScrollView>
+      </KeyboardChatScrollView>
     );
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.conversation}
+    <KeyboardChatScrollView
+      contentContainerStyle={[
+        styles.conversation,
+        { paddingBottom: bottomPadding },
+      ]}
       contentInsetAdjustmentBehavior="never"
+      keyboardDismissMode="interactive"
+      keyboardLiftBehavior="whenAtEnd"
+      keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
+      style={styles.scroll}
     >
       <Text
         selectable
@@ -69,11 +89,14 @@ export function ChatContent({ chat, colors }: ChatContentProps) {
           {chat.response}
         </Text>
       </View>
-    </ScrollView>
+    </KeyboardChatScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    flex: 1,
+  },
   emptyContent: {
     alignItems: "center",
     flexGrow: 1,

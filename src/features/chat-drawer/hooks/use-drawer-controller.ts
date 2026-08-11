@@ -129,21 +129,11 @@ export function useDrawerController({
     const progress = translateX.value / drawerWidth;
 
     return {
-      opacity: interpolate(
-        progress,
-        DRAWER_ANIMATION.menuOpacity.inputRange,
-        [
-          tuning.menuMinimumOpacity,
-          DRAWER_ANIMATION.menuOpacity.outputRange[1],
-          DRAWER_ANIMATION.menuOpacity.outputRange[2],
-        ],
-        Extrapolation.CLAMP,
-      ),
       transform: [
         {
           translateY: interpolate(
             progress,
-            DRAWER_ANIMATION.menuTranslateY.inputRange,
+            [0, tuning.menuFadeEndProgress],
             [tuning.menuTranslateY, 0],
             Extrapolation.CLAMP,
           ),
@@ -151,7 +141,7 @@ export function useDrawerController({
         {
           scale: interpolate(
             progress,
-            DRAWER_ANIMATION.menuScale.inputRange,
+            [0, tuning.menuFadeEndProgress],
             [tuning.menuMinimumScale, 1],
             Extrapolation.CLAMP,
           ),
@@ -159,6 +149,23 @@ export function useDrawerController({
       ],
     };
   });
+
+  const menuRevealOverlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      translateX.value / drawerWidth,
+      [
+        DRAWER_ANIMATION.menuOpacity.inputRange[0],
+        DRAWER_ANIMATION.menuOpacity.inputRange[1],
+        tuning.menuFadeEndProgress,
+      ],
+      [
+        1 - tuning.menuMinimumOpacity,
+        1 - tuning.menuMinimumOpacity,
+        0,
+      ],
+      Extrapolation.CLAMP,
+    ),
+  }));
 
   const mainAnimatedStyle = useAnimatedStyle(() => {
     const progress = translateX.value / drawerWidth;
@@ -195,6 +202,7 @@ export function useDrawerController({
     drawerOpen,
     mainAnimatedStyle,
     menuAnimatedStyle,
+    menuRevealOverlayAnimatedStyle,
     panGesture,
     scrimAnimatedStyle,
   };

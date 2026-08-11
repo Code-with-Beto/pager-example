@@ -88,22 +88,30 @@ export const DRAWER_LAYOUT = {
   },
 } as const;
 
+export const CHAT_COMPOSER_LAYOUT = {
+  contentBottomGap: 16,
+  estimatedHeight: 84,
+  horizontalPadding: 14,
+  keyboardGap: 16,
+  minimumBottomPadding: 12,
+} as const;
+
 export const DRAWER_GESTURE = {
   openStateThreshold: 0.5,
 } as const;
 
 export const DRAWER_ANIMATION = {
   menuOpacity: {
-    inputRange: [0, 0.22, 0.55],
-    outputRange: [0.16, 0.84, 1],
+    inputRange: [0, 0.08, 0.36],
+    outputRange: [0, 0, 1],
   },
   menuScale: {
-    inputRange: [0, 0.46],
-    outputRange: [0.992, 1],
+    inputRange: [0, 0.36],
+    outputRange: [0.975, 1],
   },
   menuTranslateY: {
-    inputRange: [0, 0.42],
-    outputRange: [10, 0],
+    inputRange: [0, 0.36],
+    outputRange: [8, 0],
   },
   scrimOpacity: {
     inputRange: [0, 1],
@@ -112,16 +120,17 @@ export const DRAWER_ANIMATION = {
 } as const;
 
 export const DRAWER_SPRING_CONFIG = {
-  damping: 30,
-  mass: 0.7,
+  damping: 26,
+  mass: 0.8,
   overshootClamping: true,
-  stiffness: 420,
+  stiffness: 220,
 } as const;
 
 export const DEFAULT_DRAWER_TUNING = {
   activationDistance: 8,
   directionalTranslationThreshold: 12,
   drawerWidthRatio: 0.76,
+  menuFadeEndProgress: DRAWER_ANIMATION.menuOpacity.inputRange[2],
   menuMinimumOpacity: DRAWER_ANIMATION.menuOpacity.outputRange[0],
   menuMinimumScale: DRAWER_ANIMATION.menuScale.outputRange[0],
   menuTranslateY: DRAWER_ANIMATION.menuTranslateY.outputRange[0],
@@ -132,6 +141,9 @@ export const DEFAULT_DRAWER_TUNING = {
   springMass: DRAWER_SPRING_CONFIG.mass,
   springStiffness: DRAWER_SPRING_CONFIG.stiffness,
   surfaceCornerRadius: DRAWER_LAYOUT.surfaceCornerRadius.android,
+  surfaceShadowBlurRadius: 12,
+  surfaceShadowOffsetX: -1,
+  surfaceShadowOpacity: 0.08,
   velocityProjection: 0.05,
   velocityThreshold: 160,
   verticalTolerance: 18,
@@ -259,8 +271,17 @@ export const TUNING_SECTIONS = [
         key: "menuMinimumOpacity",
         label: "Menu starting opacity",
         description: "Menu opacity when the drawer is fully closed.",
-        minimumValue: 0.01,
+        minimumValue: 0,
         maximumValue: 1,
+        step: 0.01,
+        format: "percent",
+      },
+      {
+        key: "menuFadeEndProgress",
+        label: "Fade completion",
+        description: "Drawer progress where the menu becomes fully visible.",
+        minimumValue: 0.2,
+        maximumValue: 0.75,
         step: 0.01,
         format: "percent",
       },
@@ -290,6 +311,38 @@ export const TUNING_SECTIONS = [
         maximumValue: 0.3,
         step: 0.01,
         format: "percent",
+      },
+    ],
+  },
+  {
+    title: "Surface shadow",
+    controls: [
+      {
+        key: "surfaceShadowOpacity",
+        label: "Shadow opacity",
+        description: "Strength of the shadow between chat and drawer.",
+        minimumValue: 0,
+        maximumValue: 0.3,
+        step: 0.01,
+        format: "percent",
+      },
+      {
+        key: "surfaceShadowBlurRadius",
+        label: "Shadow blur",
+        description: "Softness and spread of the surface shadow.",
+        minimumValue: 0,
+        maximumValue: 32,
+        step: 1,
+        format: "integer",
+      },
+      {
+        key: "surfaceShadowOffsetX",
+        label: "Horizontal offset",
+        description: "Moves the shadow left or right from the chat surface.",
+        minimumValue: -12,
+        maximumValue: 8,
+        step: 1,
+        format: "integer",
       },
     ],
   },

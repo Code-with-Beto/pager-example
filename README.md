@@ -17,7 +17,9 @@ bun run ios
 bun run android
 ```
 
-Tap the sliders icon in the chat header to open the live gesture tuner. The controls are grouped by layout, gesture recognition, spring physics, and reveal styling. Tap **Done** to test the gesture, **Reset defaults** to restore the original preset, or **Share values** to export the current configuration as JSON.
+Tap the sliders icon in the chat header to open the live gesture tuner. The controls are grouped by layout, gesture recognition, spring physics, reveal styling, and surface shadow. Tap **Done** to test the gesture, **Reset defaults** to restore the original preset, or **Share values** to export the current configuration as JSON.
+
+The message composer is a real multiline text input backed by React Native Keyboard Controller. It remains attached to the keyboard while the chat content adjusts above it.
 
 Run the static TypeScript check with `bun run typecheck`.
 
@@ -25,11 +27,16 @@ Run the static TypeScript check with `bun run typecheck`.
 
 ```text
 src/
-├── app/                         # Expo Router route and root layout only
+├── app/                         # Expo Router routes and root providers
+│   ├── _layout.tsx               # Stack, theme, gesture, and keyboard providers
+│   ├── index.tsx                 # Chat drawer route
+│   └── profile.tsx               # Modal profile route
 └── features/chat-drawer/
     ├── components/              # Focused presentation components
-    ├── hooks/                   # Theme, gesture, and tuning state
+    ├── hooks/                   # Gesture and tuning state
+    ├── providers/               # Shared feature context
     ├── chat-drawer-screen.tsx   # Feature composition and screen state
+    ├── profile-screen.tsx       # Routed profile screen
     ├── constants.ts             # Defaults, sample content, and palettes
     ├── types.ts                 # Shared feature types
     └── utils.ts                 # Pure calculations and formatting

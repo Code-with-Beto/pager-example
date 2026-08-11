@@ -97,6 +97,13 @@ export function formatDrawerTuningForShare(tuning: DrawerTuning): string {
   return `Drawer gesture tuning values:\n${JSON.stringify(tuning, null, 2)}`;
 }
 
+export function getSurfaceBoxShadow(tuning: DrawerTuning): string {
+  const { surfaceShadowBlurRadius, surfaceShadowOffsetX, surfaceShadowOpacity } =
+    tuning;
+
+  return `${surfaceShadowOffsetX}px 0 ${surfaceShadowBlurRadius}px rgba(0, 0, 0, ${surfaceShadowOpacity})`;
+}
+
 export function roundToStep(value: number, step: number): number {
   const decimalPlaces = step.toString().split(".")[1]?.length ?? 0;
   const roundedValue = Math.round(value / step) * step;

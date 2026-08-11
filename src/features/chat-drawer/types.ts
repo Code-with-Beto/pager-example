@@ -36,6 +36,7 @@ export type DrawerTuning = {
   activationDistance: number;
   directionalTranslationThreshold: number;
   drawerWidthRatio: number;
+  menuFadeEndProgress: number;
   menuMinimumOpacity: number;
   menuMinimumScale: number;
   menuTranslateY: number;
@@ -46,6 +47,9 @@ export type DrawerTuning = {
   springMass: number;
   springStiffness: number;
   surfaceCornerRadius: number;
+  surfaceShadowBlurRadius: number;
+  surfaceShadowOffsetX: number;
+  surfaceShadowOpacity: number;
   velocityProjection: number;
   velocityThreshold: number;
   verticalTolerance: number;

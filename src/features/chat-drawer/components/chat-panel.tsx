@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
+import { CHAT_COMPOSER_LAYOUT } from "../constants";
 import type {
   AppColorScheme,
   Chat,
@@ -18,6 +20,7 @@ type ChatPanelProps = {
   colors: ColorPalette;
   drawerOpen: boolean;
   onCloseTuner: () => void;
+  onComposerFocusChange: (focused: boolean) => void;
   onNumericTuningChange: (
     key: NumericDrawerTuningKey,
     value: number,
@@ -39,6 +42,7 @@ export function ChatPanel({
   colors,
   drawerOpen,
   onCloseTuner,
+  onComposerFocusChange,
   onNumericTuningChange,
   onOpenDrawer,
   onOvershootClampingChange,
@@ -50,6 +54,12 @@ export function ChatPanel({
   tunerVisible,
   tuning,
 }: ChatPanelProps) {
+  const [composerHeight, setComposerHeight] = useState<number>(
+    CHAT_COMPOSER_LAYOUT.estimatedHeight,
+  );
+  const contentBottomPadding =
+    composerHeight + safeAreaBottom + CHAT_COMPOSER_LAYOUT.contentBottomGap;
+
   return (
     <View
       accessibilityElementsHidden={drawerOpen}
@@ -77,8 +87,17 @@ export function ChatPanel({
         />
       ) : (
         <>
-          <ChatContent chat={chat} colors={colors} />
-          <ChatComposer colors={colors} safeAreaBottom={safeAreaBottom} />
+          <ChatContent
+            bottomPadding={contentBottomPadding}
+            chat={chat}
+            colors={colors}
+          />
+          <ChatComposer
+            colors={colors}
+            onFocusChange={onComposerFocusChange}
+            onHeightChange={setComposerHeight}
+            safeAreaBottom={safeAreaBottom}
+          />
         </>
       )}
     </View>

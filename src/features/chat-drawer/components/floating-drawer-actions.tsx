@@ -1,4 +1,8 @@
-import { GlassContainer, GlassView, isGlassEffectAPIAvailable } from "expo-glass-effect";
+import {
+  GlassContainer,
+  GlassView,
+  isGlassEffectAPIAvailable,
+} from "expo-glass-effect";
 import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -155,12 +159,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     justifyContent: "center",
-    padding: 3,
+    padding: 6,
   },
   profileButtonImage: {
-    borderRadius: 26,
-    height: 52,
-    width: 52,
+    borderRadius: 23,
+    height: 46,
+    width: 46,
   },
   pressed: {
     opacity: 0.64,
