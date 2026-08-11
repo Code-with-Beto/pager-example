@@ -31,39 +31,42 @@ export const PROFILE = {
   username: "@betomoedano",
 } as const;
 
+export const APPLE_BLUE = "#007AFF";
+
 export const PALETTES = {
   light: {
-    accent: "#0f766e",
-    accentText: "#ffffff",
-    appBackground: "#f4f4f4",
-    menuBackground: "#f4f4f4",
-    menuSelected: "#dededb",
-    muted: "#6f6f6a",
-    separator: "rgba(20, 20, 18, 0.09)",
-    surfaceBackground: "#ffffff",
+    accent: APPLE_BLUE,
+    accentText: "#FFFFFF",
+    appBackground: "#FFFFFF",
+    menuBackground: "#FAFAFA",
+    menuSelected: "#E0E0E0",
+    muted: "#6E6E6E",
+    separator: "rgba(0, 0, 0, 0.1)",
+    surfaceBackground: "#FFFFFF",
     surfaceBorder: "transparent",
-    text: "#171714",
-    userBubble: "#ededeb",
+    text: "#000000",
+    userBubble: "#ECECEC",
   },
   dark: {
-    accent: "#34d399",
-    accentText: "#052e2b",
-    appBackground: "#0f0f0f",
+    accent: APPLE_BLUE,
+    accentText: "#FFFFFF",
+    appBackground: "#000000",
     menuBackground: "#000000",
-    menuSelected: "#2b2b2b",
-    muted: "#a9a9a3",
-    separator: "rgba(255, 255, 255, 0.09)",
-    surfaceBackground: "#141414",
+    menuSelected: "#262626",
+    muted: "#A3A3A3",
+    separator: "rgba(255, 255, 255, 0.12)",
+    surfaceBackground: "#111111",
     surfaceBorder: "rgba(255, 255, 255, 0.1)",
-    text: "#f5f5f0",
-    userBubble: "#303030",
+    text: "#FFFFFF",
+    userBubble: "#262626",
   },
 } satisfies Record<"dark" | "light", ColorPalette>;
 
 export const SWIPE_MENU_WIDTH_RATIO = 0.76;
-export const SWIPE_MENU_SURFACE_CORNER_RADIUS = 32;
+export const SWIPE_MENU_SURFACE_CORNER_RADIUS = 55;
+// box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 export const SWIPE_MENU_SURFACE_SHADOW =
-  "-1px 0 12px rgba(0, 0, 0, 0.08)";
+  "0px 7px 30px rgba(100, 100, 111, 0.2)";
 
 export const SWIPE_MENU_LAYOUT = {
   horizontalPadding: 20,
@@ -87,7 +90,6 @@ export const SWIPE_SPRING = {
 } as const;
 
 export const SWIPE_MENU_ANIMATION = {
-  maximumScrimOpacity: 0.08,
   menuFadeEndProgress: 0.5,
   menuFadeStartProgress: 0.08,
   menuStartScale: 0.975,

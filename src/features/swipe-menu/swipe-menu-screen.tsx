@@ -28,7 +28,6 @@ export function SwipeMenuScreen() {
     isMenuOpen,
     mainAnimatedStyle,
     menuAnimatedStyle,
-    scrimAnimatedStyle,
     swipeGesture,
   } = useSwipeMenu(menuWidth);
   const selectedChat = CHATS.find((chat) => chat.id === selectedChatId);
@@ -98,13 +97,9 @@ export function SwipeMenuScreen() {
               safeAreaTop={insets.top}
             />
 
-            <Animated.View
+            <View
               pointerEvents={isMenuOpen ? "auto" : "none"}
-              style={[
-                StyleSheet.absoluteFill,
-                styles.scrim,
-                scrimAnimatedStyle,
-              ]}
+              style={StyleSheet.absoluteFill}
             >
               <Pressable
                 accessibilityLabel="Close swipe menu"
@@ -112,7 +107,7 @@ export function SwipeMenuScreen() {
                 onPress={() => animateMenu(false)}
                 style={StyleSheet.absoluteFill}
               />
-            </Animated.View>
+            </View>
           </Animated.View>
         </Animated.View>
       </View>
@@ -133,8 +128,5 @@ const styles = StyleSheet.create({
     borderCurve: "continuous",
     flex: 1,
     overflow: "hidden",
-  },
-  scrim: {
-    backgroundColor: "#000000",
   },
 });

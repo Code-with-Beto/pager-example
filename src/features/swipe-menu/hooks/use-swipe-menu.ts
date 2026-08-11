@@ -167,21 +167,12 @@ export function useSwipeMenu(menuWidth: number) {
     ),
   }));
 
-  const scrimAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      translateX.value / menuWidth,
-      [0, 1],
-      [0, SWIPE_MENU_ANIMATION.maximumScrimOpacity],
-    ),
-  }));
-
   return {
     animateMenu,
     clippedSurfaceAnimatedStyle,
     isMenuOpen,
     mainAnimatedStyle,
     menuAnimatedStyle,
-    scrimAnimatedStyle,
     swipeGesture,
   };
 }
