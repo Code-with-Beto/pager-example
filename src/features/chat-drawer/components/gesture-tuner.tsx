@@ -15,7 +15,7 @@ import type {
   DrawerTuning,
   NumericDrawerTuningKey,
 } from "../types";
-import { formatTuningValue } from "../utils";
+import { formatTuningValue, roundToStep } from "../utils";
 
 type GestureTunerProps = {
   colorScheme: AppColorScheme;
@@ -119,7 +119,10 @@ export function GestureTuner({
                       max={control.maximumValue}
                       min={control.minimumValue}
                       onValueChange={(nextValue) =>
-                        onNumericValueChange(control.key, nextValue)
+                        onNumericValueChange(
+                          control.key,
+                          roundToStep(nextValue, control.step),
+                        )
                       }
                       step={control.step}
                       value={value}

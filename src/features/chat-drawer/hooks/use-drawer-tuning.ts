@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { DEFAULT_DRAWER_TUNING } from "../constants";
 import type {
@@ -15,6 +15,24 @@ export function useDrawerTuning(defaultSurfaceCornerRadius: number) {
     [defaultSurfaceCornerRadius],
   );
   const [tuning, setTuning] = useState<DrawerTuning>(createDefaults);
+  const previousDefaultCornerRadius = useRef(defaultSurfaceCornerRadius);
+
+  useEffect(() => {
+    setTuning((current) => {
+      if (
+        current.surfaceCornerRadius !== previousDefaultCornerRadius.current ||
+        current.surfaceCornerRadius === defaultSurfaceCornerRadius
+      ) {
+        return current;
+      }
+
+      return {
+        ...current,
+        surfaceCornerRadius: defaultSurfaceCornerRadius,
+      };
+    });
+    previousDefaultCornerRadius.current = defaultSurfaceCornerRadius;
+  }, [defaultSurfaceCornerRadius]);
 
   const setNumericValue = useCallback(
     (key: NumericDrawerTuningKey, value: number) => {

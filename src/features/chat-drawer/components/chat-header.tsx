@@ -58,6 +58,7 @@ export function ChatHeader({
         onPress={onToggleTuner}
         style={({ pressed }) => [
           styles.iconButton,
+          styles.tunerButton,
           tunerVisible && { backgroundColor: colors.composer },
           pressed && styles.pressed,
         ]}
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   tunerFallbackIcon: {
     fontSize: 19,
   },
-  selectedTunerButton: {
+  tunerButton: {
     borderCurve: "continuous",
     borderRadius: 10,
   },

@@ -1,5 +1,6 @@
-import { DRAWER_LAYOUT } from "./constants";
 import type { ColorSchemeName } from "react-native";
+
+import { DRAWER_LAYOUT } from "./constants";
 import type {
   AppColorScheme,
   DrawerEndState,
@@ -52,17 +53,19 @@ export function clamp(value: number, minimum: number, maximum: number): number {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
-export function shouldOpenDrawer({
-  currentPosition,
-  drawerWidth,
-  translationX,
-  velocityX,
-}: DrawerEndState, tuning: DrawerTuning): boolean {
+export function shouldOpenDrawer(
+  {
+    currentPosition,
+    drawerWidth,
+    translationX,
+    velocityX,
+  }: DrawerEndState,
+  tuning: DrawerTuning,
+): boolean {
   "worklet";
 
   const hasDirectionalIntent =
-    Math.abs(translationX) >
-      tuning.directionalTranslationThreshold ||
+    Math.abs(translationX) > tuning.directionalTranslationThreshold ||
     Math.abs(velocityX) > tuning.velocityThreshold;
 
   if (hasDirectionalIntent) {
@@ -92,4 +95,11 @@ export function formatTuningValue(
 
 export function formatDrawerTuningForShare(tuning: DrawerTuning): string {
   return `Drawer gesture tuning values:\n${JSON.stringify(tuning, null, 2)}`;
+}
+
+export function roundToStep(value: number, step: number): number {
+  const decimalPlaces = step.toString().split(".")[1]?.length ?? 0;
+  const roundedValue = Math.round(value / step) * step;
+
+  return Number(roundedValue.toFixed(decimalPlaces));
 }

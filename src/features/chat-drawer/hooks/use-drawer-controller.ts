@@ -36,12 +36,20 @@ export function useDrawerController({
   const translateX = useSharedValue(0);
   const gestureStartX = useSharedValue(0);
   const previousDrawerWidth = useRef(drawerWidth);
-  const springConfig = {
-    damping: tuning.springDamping,
-    mass: tuning.springMass,
-    overshootClamping: tuning.overshootClamping,
-    stiffness: tuning.springStiffness,
-  };
+  const springConfig = useMemo(
+    () => ({
+      damping: tuning.springDamping,
+      mass: tuning.springMass,
+      overshootClamping: tuning.overshootClamping,
+      stiffness: tuning.springStiffness,
+    }),
+    [
+      tuning.overshootClamping,
+      tuning.springDamping,
+      tuning.springMass,
+      tuning.springStiffness,
+    ],
+  );
 
   const animateDrawer = useCallback(
     (open: boolean) => {
