@@ -77,7 +77,7 @@ export function SwipeMenu({
     >
       <Animated.View style={[styles.menuBody, contentAnimatedStyle]}>
         <Text selectable style={[styles.title, { color: colors.text }]}>
-          CWB
+          Code with Beto
         </Text>
 
         <ScrollView
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: "700",
     letterSpacing: -1,
     paddingBottom: 14,

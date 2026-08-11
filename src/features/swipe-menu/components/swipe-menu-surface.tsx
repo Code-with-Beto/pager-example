@@ -55,7 +55,7 @@ export function SwipeMenuSurface({
 
         <View style={styles.titleGroup}>
           <Text selectable style={[styles.title, { color: colors.text }]}>
-            CWB
+            cwb.sh
           </Text>
           <Text selectable style={[styles.subtitle, { color: colors.muted }]}>
             Swipe right for the menu
