@@ -1,7 +1,14 @@
-import { Button, Host, Switch } from "@expo/ui";
+import { Host, Switch } from "@expo/ui";
+import {
+  GlassContainer,
+  GlassView,
+  isGlassEffectAPIAvailable,
+} from "expo-glass-effect";
+import { Image } from "expo-image";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,7 +18,9 @@ import {
   View,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { Presets } from "react-native-pulsar";
 import Animated, {
+  Extrapolation,
   interpolate,
   runOnJS,
   useAnimatedStyle,
@@ -53,14 +62,17 @@ const chats: Chat[] = [
   },
 ];
 
+const profileImageUrl = "https://github.com/betomoedano.png";
+const appleBlue = "#007AFF";
+
 const palettes = {
   light: {
     accent: "#0f766e",
     accentText: "#ffffff",
-    appBackground: "#e9e9e7",
+    appBackground: "#f4f4f4",
     chatBackground: "#ffffff",
     composer: "#f4f4f2",
-    menuBackground: "#ececea",
+    menuBackground: "#f4f4f4",
     menuSelected: "#dededb",
     muted: "#6f6f6a",
     separator: "rgba(20, 20, 18, 0.09)",
@@ -85,10 +97,10 @@ const palettes = {
 } as const;
 
 const springConfig = {
-  damping: 25,
-  mass: 0.85,
+  damping: 30,
+  mass: 0.7,
   overshootClamping: true,
-  stiffness: 250,
+  stiffness: 420,
 };
 
 export default function DrawerPagerExample() {
@@ -98,6 +110,7 @@ export default function DrawerPagerExample() {
   const [themePreference, setThemePreference] =
     useState<ThemePreference>("system");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [profileVisible, setProfileVisible] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
   const colorScheme =
@@ -145,7 +158,7 @@ export default function DrawerPagerExample() {
   const panGesture = useMemo(
     () =>
       Gesture.Pan()
-        .activeOffsetX([-12, 12])
+        .activeOffsetX([-8, 8])
         .failOffsetY([-18, 18])
         .onBegin(() => {
           gestureStartX.value = translateX.value;
@@ -157,15 +170,24 @@ export default function DrawerPagerExample() {
           );
         })
         .onEnd((event) => {
-          const projectedPosition = translateX.value + event.velocityX * 0.14;
-          const shouldOpen =
-            event.velocityX > 500 ||
-            (event.velocityX > -500 && projectedPosition > drawerWidth * 0.46);
+          const startedOpen = gestureStartX.value > drawerWidth * 0.5;
+          const hasDirectionalIntent =
+            Math.abs(event.translationX) > 12 ||
+            Math.abs(event.velocityX) > 160;
+          const intendedDirection = event.translationX + event.velocityX * 0.05;
+          const shouldOpen = hasDirectionalIntent
+            ? intendedDirection > 0
+            : translateX.value > drawerWidth * 0.18;
 
           translateX.value = withSpring(
             shouldOpen ? drawerWidth : 0,
             springConfig,
           );
+
+          if (shouldOpen !== startedOpen) {
+            Presets.System.impactLight();
+          }
+
           runOnJS(setDrawerOpen)(shouldOpen);
         }),
     [drawerWidth, gestureStartX, translateX],
@@ -175,10 +197,29 @@ export default function DrawerPagerExample() {
     const progress = translateX.value / drawerWidth;
 
     return {
-      opacity: interpolate(progress, [0, 0.55, 1], [0.08, 0.72, 1]),
+      opacity: interpolate(
+        progress,
+        [0, 0.22, 0.55],
+        [0.16, 0.84, 1],
+        Extrapolation.CLAMP,
+      ),
       transform: [
-        { translateY: interpolate(progress, [0, 1], [20, 0]) },
-        { scale: interpolate(progress, [0, 1], [0.985, 1]) },
+        {
+          translateY: interpolate(
+            progress,
+            [0, 0.42],
+            [10, 0],
+            Extrapolation.CLAMP,
+          ),
+        },
+        {
+          scale: interpolate(
+            progress,
+            [0, 0.46],
+            [0.992, 1],
+            Extrapolation.CLAMP,
+          ),
+        },
       ],
     };
   });
@@ -257,19 +298,6 @@ export default function DrawerPagerExample() {
               </Pressable>
             </View>
 
-            <Host
-              colorScheme={colorScheme}
-              matchContents={{ vertical: true }}
-              seedColor={colors.accent}
-              style={{ width: drawerWidth - 40 }}
-            >
-              <Button
-                label="New chat"
-                onPress={() => selectChat(null)}
-                style={{ width: drawerWidth - 40 }}
-              />
-            </Host>
-
             <Text
               selectable
               style={[styles.sectionLabel, { color: colors.muted }]}
@@ -334,27 +362,11 @@ export default function DrawerPagerExample() {
               </Host>
             </View>
 
-            <View style={styles.accountRow}>
-              <View style={[styles.avatar, { backgroundColor: colors.accent }]}>
-                <Text style={[styles.avatarText, { color: colors.accentText }]}>
-                  B
-                </Text>
-              </View>
-              <View style={styles.accountCopy}>
-                <Text
-                  selectable
-                  style={[styles.accountName, { color: colors.text }]}
-                >
-                  Beto
-                </Text>
-                <Text
-                  selectable
-                  style={[styles.accountPlan, { color: colors.muted }]}
-                >
-                  Drawer prototype
-                </Text>
-              </View>
-            </View>
+            <FloatingDrawerActions
+              colorScheme={colorScheme}
+              onNewChat={() => selectChat(null)}
+              onProfile={() => setProfileVisible(true)}
+            />
           </View>
         </Animated.View>
 
@@ -510,8 +522,182 @@ export default function DrawerPagerExample() {
             </Animated.View>
           </Animated.View>
         </Animated.View>
+
+        <ProfileModal
+          colorScheme={colorScheme}
+          colors={colors}
+          onClose={() => setProfileVisible(false)}
+          visible={profileVisible}
+        />
       </View>
     </GestureDetector>
+  );
+}
+
+function FloatingDrawerActions({
+  colorScheme,
+  onNewChat,
+  onProfile,
+}: {
+  colorScheme: "light" | "dark";
+  onNewChat: () => void;
+  onProfile: () => void;
+}) {
+  const canUseLiquidGlass =
+    process.env.EXPO_OS === "ios" && isGlassEffectAPIAvailable();
+
+  const newChatContent = (
+    <Pressable
+      accessibilityLabel="New chat"
+      accessibilityRole="button"
+      onPress={onNewChat}
+      style={({ pressed }) => [
+        styles.newChatButtonContent,
+        { opacity: pressed ? 0.62 : 1 },
+      ]}
+    >
+      {process.env.EXPO_OS === "ios" ? (
+        <Image
+          source="sf:square.and.pencil"
+          style={styles.newChatIcon}
+          tintColor="#ffffff"
+        />
+      ) : (
+        <Text style={styles.newChatFallbackIcon}>＋</Text>
+      )}
+      <Text style={styles.newChatButtonLabel}>New chat</Text>
+    </Pressable>
+  );
+
+  const profileContent = (
+    <Pressable
+      accessibilityLabel="Open Beto's profile"
+      accessibilityRole="button"
+      onPress={onProfile}
+      style={({ pressed }) => [
+        styles.profileButtonContent,
+        { opacity: pressed ? 0.68 : 1 },
+      ]}
+    >
+      <Image
+        contentFit="cover"
+        source={{ uri: profileImageUrl }}
+        style={styles.profileButtonImage}
+        transition={180}
+      />
+    </Pressable>
+  );
+
+  if (canUseLiquidGlass) {
+    return (
+      <GlassContainer spacing={10} style={styles.floatingActions}>
+        <GlassView
+          colorScheme={colorScheme}
+          glassEffectStyle="regular"
+          isInteractive
+          style={styles.newChatGlassButton}
+          tintColor={appleBlue}
+        >
+          {newChatContent}
+        </GlassView>
+        <GlassView
+          colorScheme={colorScheme}
+          glassEffectStyle="clear"
+          isInteractive
+          style={styles.profileGlassButton}
+        >
+          {profileContent}
+        </GlassView>
+      </GlassContainer>
+    );
+  }
+
+  return (
+    <View style={styles.floatingActions}>
+      <View style={styles.newChatFallbackButton}>{newChatContent}</View>
+      <View style={styles.profileFallbackButton}>{profileContent}</View>
+    </View>
+  );
+}
+
+function ProfileModal({
+  colorScheme,
+  colors,
+  onClose,
+  visible,
+}: {
+  colorScheme: "light" | "dark";
+  colors: (typeof palettes)["light"] | (typeof palettes)["dark"];
+  onClose: () => void;
+  visible: boolean;
+}) {
+  return (
+    <Modal
+      animationType="fade"
+      onRequestClose={onClose}
+      presentationStyle="overFullScreen"
+      statusBarTranslucent
+      transparent
+      visible={visible}
+    >
+      <View style={styles.modalRoot}>
+        <Pressable
+          accessibilityLabel="Close profile"
+          accessibilityRole="button"
+          onPress={onClose}
+          style={StyleSheet.absoluteFill}
+        />
+        <View
+          style={[
+            styles.profileModalCard,
+            {
+              backgroundColor: colors.chatBackground,
+              borderColor: colors.separator,
+            },
+          ]}
+        >
+          <Image
+            contentFit="cover"
+            source={{ uri: profileImageUrl }}
+            style={styles.profileModalImage}
+            transition={180}
+          />
+          <Text
+            selectable
+            style={[styles.profileModalName, { color: colors.text }]}
+          >
+            Beto
+          </Text>
+          <Text
+            selectable
+            style={[styles.profileModalHandle, { color: colors.muted }]}
+          >
+            @betomoedano
+          </Text>
+          <Text
+            selectable
+            style={[styles.profileModalBio, { color: colors.text }]}
+          >
+            Mobile developer and creator behind Code with Beto.
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={onClose}
+            style={({ pressed }) => [
+              styles.modalCloseButton,
+              {
+                backgroundColor: colorScheme === "dark" ? "#303030" : "#eeeeee",
+                opacity: pressed ? 0.6 : 1,
+              },
+            ]}
+          >
+            <Text style={[styles.modalCloseLabel, { color: colors.text }]}>
+              Close
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -670,34 +856,73 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     paddingTop: 14,
   },
-  accountRow: {
+  floatingActions: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 12,
-    paddingHorizontal: 4,
+    gap: 10,
+    height: 58,
+    paddingHorizontal: 2,
   },
-  avatar: {
-    alignItems: "center",
+  newChatGlassButton: {
     borderCurve: "continuous",
-    borderRadius: 12,
-    height: 38,
-    justifyContent: "center",
-    width: 38,
-  },
-  avatarText: {
-    fontSize: 15,
-    fontWeight: "800",
-  },
-  accountCopy: {
+    borderRadius: 29,
     flex: 1,
-    gap: 2,
+    height: 58,
+    overflow: "hidden",
   },
-  accountName: {
-    fontSize: 14,
+  newChatFallbackButton: {
+    backgroundColor: appleBlue,
+    borderCurve: "continuous",
+    borderRadius: 29,
+    flex: 1,
+    height: 58,
+    overflow: "hidden",
+  },
+  newChatButtonContent: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    gap: 9,
+    justifyContent: "center",
+    paddingHorizontal: 18,
+  },
+  newChatButtonLabel: {
+    color: "#ffffff",
+    fontSize: 16,
     fontWeight: "600",
   },
-  accountPlan: {
-    fontSize: 12,
+  newChatIcon: {
+    height: 20,
+    width: 20,
+  },
+  newChatFallbackIcon: {
+    color: "#ffffff",
+    fontSize: 22,
+    fontWeight: "500",
+  },
+  profileGlassButton: {
+    borderRadius: 29,
+    height: 58,
+    overflow: "hidden",
+    width: 58,
+  },
+  profileFallbackButton: {
+    backgroundColor: "rgba(128, 128, 128, 0.14)",
+    borderRadius: 29,
+    height: 58,
+    overflow: "hidden",
+    width: 58,
+  },
+  profileButtonContent: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+    padding: 3,
+  },
+  profileButtonImage: {
+    borderRadius: 26,
+    height: 52,
+    width: 52,
   },
   mainShadow: {
     borderCurve: "continuous",
@@ -880,5 +1105,56 @@ const styles = StyleSheet.create({
   },
   scrim: {
     backgroundColor: "#000000",
+  },
+  modalRoot: {
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.34)",
+    flex: 1,
+    justifyContent: "center",
+    padding: 24,
+  },
+  profileModalCard: {
+    alignItems: "center",
+    borderCurve: "continuous",
+    borderRadius: 28,
+    borderWidth: 1,
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.22)",
+    gap: 7,
+    maxWidth: 360,
+    padding: 24,
+    width: "100%",
+  },
+  profileModalImage: {
+    borderRadius: 48,
+    height: 96,
+    marginBottom: 8,
+    width: 96,
+  },
+  profileModalName: {
+    fontSize: 22,
+    fontWeight: "700",
+    letterSpacing: -0.5,
+  },
+  profileModalHandle: {
+    fontSize: 14,
+  },
+  profileModalBio: {
+    fontSize: 15,
+    lineHeight: 21,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    textAlign: "center",
+  },
+  modalCloseButton: {
+    alignItems: "center",
+    alignSelf: "stretch",
+    borderCurve: "continuous",
+    borderRadius: 18,
+    justifyContent: "center",
+    minHeight: 44,
+  },
+  modalCloseLabel: {
+    fontSize: 15,
+    fontWeight: "600",
   },
 });

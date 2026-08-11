@@ -4,18 +4,17 @@
     "slug": "pager-example",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icon-1786462845888.png",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/app-icon.icon",
       "bundleIdentifier": "com.cwb-beto.pager-example"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/icon-1786462845888.png",
+        "backgroundImage": "./assets/icon-1786462845888.png",
+        "monochromeImage": "./assets/icon-1786462845888.png"
       }
     },
     "plugins": [
