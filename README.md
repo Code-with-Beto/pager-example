@@ -1,27 +1,21 @@
 # ChatGPT-Inspired Swipe Menu for React Native
 
-An Expo SDK 57 example of a layered swipe menu inspired by the ChatGPT mobile app, built by [Beto Moedano](https://codewithbeto.dev). Swipe right anywhere on the chat surface to reveal the menu, then swipe left or tap the exposed surface to close it.
+Example of a layered swipe menu inspired by the ChatGPT mobile app. Swipe right anywhere on the chat surface to reveal the menu, then swipe left or tap the exposed surface to close it.
 
-The menu stays mounted underneath the main chat surface while Reanimated and Gesture Handler drive the interaction on the UI thread. The result is a responsive, interruptible gesture with spring motion, rounded corners, shadows, and light haptic feedback.
+The menu stays mounted underneath the main chat surface while Reanimated and Gesture Handler drive the interaction on the UI thread. The result is a responsive, interruptible gesture with spring motion, rounded corners, shadows, and light haptic feedback with Pulsar.
 
-## What This Example Covers
+## Watch the demo 👇
 
-- A full-screen pan gesture that opens and closes in either direction
-- A layered drawer that keeps part of the main surface visible
-- Light and dark appearances using native `@expo/ui` controls
-- Liquid Glass actions on supported iOS versions with cross-platform fallbacks
-- Recent-chat selection, safe-area handling, and accessible controls
+(coming soon)
 
-This intentionally does not use [`PagerView`](https://docs.expo.dev/versions/v57.0.0/sdk/ui/drop-in-replacements/pagerview/). Pager pages always stretch to fill the viewport, while this interaction needs the chat surface to stop partially onscreen and cast a shadow over the menu.
-
-## Run
+## Setup
 
 ```bash
+# clone the repo, then:
 bun install
 bun run ios
+bun run android
 ```
-
-Use `bun run android` for Android. Swipe right anywhere on the chat to open the menu. Swipe left or tap the exposed chat surface to close it. Selecting a recent chat loads it and closes the menu.
 
 ## Keep Building with Code with Beto
 

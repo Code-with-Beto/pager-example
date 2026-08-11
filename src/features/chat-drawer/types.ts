@@ -33,3 +33,43 @@ export type DrawerEndState = {
   translationX: number;
   velocityX: number;
 };
+
+export type DrawerTuning = {
+  activationDistance: number;
+  directionalTranslationThreshold: number;
+  drawerWidthRatio: number;
+  menuMinimumOpacity: number;
+  menuMinimumScale: number;
+  menuTranslateY: number;
+  overshootClamping: boolean;
+  positionThreshold: number;
+  scrimMaximumOpacity: number;
+  springDamping: number;
+  springMass: number;
+  springStiffness: number;
+  surfaceCornerRadius: number;
+  velocityProjection: number;
+  velocityThreshold: number;
+  verticalTolerance: number;
+};
+
+export type NumericDrawerTuningKey = {
+  [Key in keyof DrawerTuning]: DrawerTuning[Key] extends number ? Key : never;
+}[keyof DrawerTuning];
+
+export type TuningValueFormat = "decimal" | "integer" | "percent";
+
+export type TuningSliderDefinition = {
+  description: string;
+  format: TuningValueFormat;
+  key: NumericDrawerTuningKey;
+  label: string;
+  maximumValue: number;
+  minimumValue: number;
+  step: number;
+};
+
+export type TuningSection = {
+  controls: readonly TuningSliderDefinition[];
+  title: string;
+};

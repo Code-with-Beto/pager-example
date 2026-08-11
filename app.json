@@ -15,7 +15,8 @@
         "foregroundImage": "./assets/icon-1786462845888.png",
         "backgroundImage": "./assets/icon-1786462845888.png",
         "monochromeImage": "./assets/icon-1786462845888.png"
-      }
+      },
+      "package": "com.cwbbeto.pagerexample"
     },
     "plugins": [
       "expo-router"

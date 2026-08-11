@@ -1,8 +1,10 @@
-import { DRAWER_GESTURE, DRAWER_LAYOUT } from "./constants";
+import { DRAWER_LAYOUT } from "./constants";
 import type {
   AppColorScheme,
   DrawerEndState,
+  DrawerTuning,
   ThemePreference,
+  TuningValueFormat,
 } from "./types";
 
 export function resolveColorScheme(
@@ -16,8 +18,11 @@ export function resolveColorScheme(
   return systemColorScheme === "dark" ? "dark" : "light";
 }
 
-export function getDrawerWidth(screenWidth: number): number {
-  return screenWidth * DRAWER_LAYOUT.widthRatio;
+export function getDrawerWidth(
+  screenWidth: number,
+  drawerWidthRatio: number,
+): number {
+  return screenWidth * drawerWidthRatio;
 }
 
 export function getSurfaceCornerRadius(
@@ -51,20 +56,39 @@ export function shouldOpenDrawer({
   drawerWidth,
   translationX,
   velocityX,
-}: DrawerEndState): boolean {
+}: DrawerEndState, tuning: DrawerTuning): boolean {
   "worklet";
 
   const hasDirectionalIntent =
     Math.abs(translationX) >
-      DRAWER_GESTURE.directionalTranslationThreshold ||
-    Math.abs(velocityX) > DRAWER_GESTURE.velocityThreshold;
+      tuning.directionalTranslationThreshold ||
+    Math.abs(velocityX) > tuning.velocityThreshold;
 
   if (hasDirectionalIntent) {
     const projectedDirection =
-      translationX + velocityX * DRAWER_GESTURE.velocityProjection;
+      translationX + velocityX * tuning.velocityProjection;
 
     return projectedDirection > 0;
   }
 
-  return currentPosition > drawerWidth * DRAWER_GESTURE.positionThreshold;
+  return currentPosition > drawerWidth * tuning.positionThreshold;
+}
+
+export function formatTuningValue(
+  value: number,
+  format: TuningValueFormat,
+): string {
+  if (format === "percent") {
+    return `${Math.round(value * 100)}%`;
+  }
+
+  if (format === "integer") {
+    return Math.round(value).toString();
+  }
+
+  return Number(value.toFixed(3)).toString();
+}
+
+export function formatDrawerTuningForShare(tuning: DrawerTuning): string {
+  return `Drawer gesture tuning values:\n${JSON.stringify(tuning, null, 2)}`;
 }

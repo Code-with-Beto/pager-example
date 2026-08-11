@@ -1,4 +1,10 @@
-import type { AppColorScheme, Chat, ColorPalette } from "./types";
+import type {
+  AppColorScheme,
+  Chat,
+  ColorPalette,
+  DrawerTuning,
+  TuningSection,
+} from "./types";
 
 export const CHATS = [
   {
@@ -80,17 +86,10 @@ export const DRAWER_LAYOUT = {
     notchedIosInset: 44,
     notchedIosRatio: 0.82,
   },
-  widthRatio: 0.76,
 } as const;
 
 export const DRAWER_GESTURE = {
-  activeOffsetX: [-8, 8] as [number, number],
-  directionalTranslationThreshold: 12,
-  failOffsetY: [-18, 18] as [number, number],
   openStateThreshold: 0.5,
-  positionThreshold: 0.18,
-  velocityProjection: 0.05,
-  velocityThreshold: 160,
 } as const;
 
 export const DRAWER_ANIMATION = {
@@ -118,6 +117,183 @@ export const DRAWER_SPRING_CONFIG = {
   overshootClamping: true,
   stiffness: 420,
 } as const;
+
+export const DEFAULT_DRAWER_TUNING = {
+  activationDistance: 8,
+  directionalTranslationThreshold: 12,
+  drawerWidthRatio: 0.76,
+  menuMinimumOpacity: 0.16,
+  menuMinimumScale: 0.992,
+  menuTranslateY: 10,
+  overshootClamping: true,
+  positionThreshold: 0.18,
+  scrimMaximumOpacity: 0.08,
+  springDamping: DRAWER_SPRING_CONFIG.damping,
+  springMass: DRAWER_SPRING_CONFIG.mass,
+  springStiffness: DRAWER_SPRING_CONFIG.stiffness,
+  surfaceCornerRadius: DRAWER_LAYOUT.surfaceCornerRadius.android,
+  velocityProjection: 0.05,
+  velocityThreshold: 160,
+  verticalTolerance: 18,
+} satisfies DrawerTuning;
+
+export const TUNING_SECTIONS = [
+  {
+    title: "Layout",
+    controls: [
+      {
+        key: "drawerWidthRatio",
+        label: "Drawer width",
+        description: "How much of the screen the open drawer occupies.",
+        minimumValue: 0.55,
+        maximumValue: 0.9,
+        step: 0.01,
+        format: "percent",
+      },
+      {
+        key: "surfaceCornerRadius",
+        label: "Surface corner radius",
+        description: "Rounding applied to the chat surface while open.",
+        minimumValue: 0,
+        maximumValue: 64,
+        step: 1,
+        format: "integer",
+      },
+    ],
+  },
+  {
+    title: "Gesture recognition",
+    controls: [
+      {
+        key: "activationDistance",
+        label: "Horizontal activation",
+        description: "Horizontal movement required before the pan activates.",
+        minimumValue: 2,
+        maximumValue: 24,
+        step: 1,
+        format: "integer",
+      },
+      {
+        key: "verticalTolerance",
+        label: "Vertical tolerance",
+        description: "Vertical movement allowed before the pan fails.",
+        minimumValue: 8,
+        maximumValue: 60,
+        step: 1,
+        format: "integer",
+      },
+      {
+        key: "positionThreshold",
+        label: "Open threshold",
+        description: "Drawer progress needed to stay open after a slow drag.",
+        minimumValue: 0.05,
+        maximumValue: 0.8,
+        step: 0.01,
+        format: "percent",
+      },
+      {
+        key: "directionalTranslationThreshold",
+        label: "Directional distance",
+        description: "Drag distance that counts as an intentional swipe.",
+        minimumValue: 0,
+        maximumValue: 50,
+        step: 1,
+        format: "integer",
+      },
+      {
+        key: "velocityThreshold",
+        label: "Velocity threshold",
+        description: "Swipe velocity that counts as directional intent.",
+        minimumValue: 50,
+        maximumValue: 1200,
+        step: 10,
+        format: "integer",
+      },
+      {
+        key: "velocityProjection",
+        label: "Velocity influence",
+        description: "How strongly swipe velocity predicts the destination.",
+        minimumValue: 0,
+        maximumValue: 0.15,
+        step: 0.005,
+        format: "decimal",
+      },
+    ],
+  },
+  {
+    title: "Spring",
+    controls: [
+      {
+        key: "springStiffness",
+        label: "Stiffness",
+        description: "Higher values snap to the destination more quickly.",
+        minimumValue: 50,
+        maximumValue: 800,
+        step: 10,
+        format: "integer",
+      },
+      {
+        key: "springDamping",
+        label: "Damping",
+        description: "Higher values reduce bounce and oscillation.",
+        minimumValue: 5,
+        maximumValue: 60,
+        step: 1,
+        format: "integer",
+      },
+      {
+        key: "springMass",
+        label: "Mass",
+        description: "Higher values make the surface feel heavier.",
+        minimumValue: 0.1,
+        maximumValue: 2,
+        step: 0.1,
+        format: "decimal",
+      },
+    ],
+  },
+  {
+    title: "Reveal styling",
+    controls: [
+      {
+        key: "menuMinimumOpacity",
+        label: "Menu starting opacity",
+        description: "Menu opacity when the drawer is fully closed.",
+        minimumValue: 0,
+        maximumValue: 1,
+        step: 0.01,
+        format: "percent",
+      },
+      {
+        key: "menuTranslateY",
+        label: "Menu vertical travel",
+        description: "How far down the menu begins before it settles.",
+        minimumValue: 0,
+        maximumValue: 40,
+        step: 1,
+        format: "integer",
+      },
+      {
+        key: "menuMinimumScale",
+        label: "Menu starting scale",
+        description: "Menu scale when the drawer is fully closed.",
+        minimumValue: 0.94,
+        maximumValue: 1,
+        step: 0.001,
+        format: "decimal",
+      },
+      {
+        key: "scrimMaximumOpacity",
+        label: "Chat dimming",
+        description: "Maximum overlay opacity on the exposed chat surface.",
+        minimumValue: 0,
+        maximumValue: 0.3,
+        step: 0.01,
+        format: "percent",
+      },
+    ],
+  },
+] as const satisfies readonly TuningSection[];
 
 export const UI_COLORS = {
   appleBlue: "#007AFF",

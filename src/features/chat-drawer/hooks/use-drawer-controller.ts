@@ -13,13 +13,14 @@ import {
 import {
   DRAWER_ANIMATION,
   DRAWER_GESTURE,
-  DRAWER_SPRING_CONFIG,
 } from "../constants";
+import type { DrawerTuning } from "../types";
 import { clamp, shouldOpenDrawer } from "../utils";
 
 type UseDrawerControllerOptions = {
   drawerWidth: number;
-  surfaceCornerRadius: number;
+  gesturesEnabled: boolean;
+  tuning: DrawerTuning;
 };
 
 function playDrawerStateChangeHaptic() {
@@ -28,22 +29,29 @@ function playDrawerStateChangeHaptic() {
 
 export function useDrawerController({
   drawerWidth,
-  surfaceCornerRadius,
+  gesturesEnabled,
+  tuning,
 }: UseDrawerControllerOptions) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const translateX = useSharedValue(0);
   const gestureStartX = useSharedValue(0);
   const previousDrawerWidth = useRef(drawerWidth);
+  const springConfig = {
+    damping: tuning.springDamping,
+    mass: tuning.springMass,
+    overshootClamping: tuning.overshootClamping,
+    stiffness: tuning.springStiffness,
+  };
 
   const animateDrawer = useCallback(
     (open: boolean) => {
       setDrawerOpen(open);
       translateX.value = withSpring(
         open ? drawerWidth : 0,
-        DRAWER_SPRING_CONFIG,
+        springConfig,
       );
     },
-    [drawerWidth, translateX],
+    [drawerWidth, springConfig, translateX],
   );
 
   useEffect(() => {
@@ -58,8 +66,12 @@ export function useDrawerController({
   const panGesture = useMemo(
     () =>
       Gesture.Pan()
-        .activeOffsetX(DRAWER_GESTURE.activeOffsetX)
-        .failOffsetY(DRAWER_GESTURE.failOffsetY)
+        .enabled(gesturesEnabled)
+        .activeOffsetX([
+          -tuning.activationDistance,
+          tuning.activationDistance,
+        ])
+        .failOffsetY([-tuning.verticalTolerance, tuning.verticalTolerance])
         .onBegin(() => {
           gestureStartX.value = translateX.value;
         })
@@ -74,16 +86,19 @@ export function useDrawerController({
           const startedOpen =
             gestureStartX.value >
             drawerWidth * DRAWER_GESTURE.openStateThreshold;
-          const shouldOpen = shouldOpenDrawer({
-            currentPosition: translateX.value,
-            drawerWidth,
-            translationX: event.translationX,
-            velocityX: event.velocityX,
-          });
+          const shouldOpen = shouldOpenDrawer(
+            {
+              currentPosition: translateX.value,
+              drawerWidth,
+              translationX: event.translationX,
+              velocityX: event.velocityX,
+            },
+            tuning,
+          );
 
           translateX.value = withSpring(
             shouldOpen ? drawerWidth : 0,
-            DRAWER_SPRING_CONFIG,
+            springConfig,
           );
 
           if (shouldOpen !== startedOpen) {
@@ -92,7 +107,14 @@ export function useDrawerController({
 
           runOnJS(setDrawerOpen)(shouldOpen);
         }),
-    [drawerWidth, gestureStartX, translateX],
+    [
+      drawerWidth,
+      gestureStartX,
+      gesturesEnabled,
+      springConfig,
+      translateX,
+      tuning,
+    ],
   );
 
   const menuAnimatedStyle = useAnimatedStyle(() => {
@@ -102,7 +124,11 @@ export function useDrawerController({
       opacity: interpolate(
         progress,
         DRAWER_ANIMATION.menuOpacity.inputRange,
-        DRAWER_ANIMATION.menuOpacity.outputRange,
+        [
+          tuning.menuMinimumOpacity,
+          DRAWER_ANIMATION.menuOpacity.outputRange[1],
+          DRAWER_ANIMATION.menuOpacity.outputRange[2],
+        ],
         Extrapolation.CLAMP,
       ),
       transform: [
@@ -110,7 +136,7 @@ export function useDrawerController({
           translateY: interpolate(
             progress,
             DRAWER_ANIMATION.menuTranslateY.inputRange,
-            DRAWER_ANIMATION.menuTranslateY.outputRange,
+            [tuning.menuTranslateY, 0],
             Extrapolation.CLAMP,
           ),
         },
@@ -118,7 +144,7 @@ export function useDrawerController({
           scale: interpolate(
             progress,
             DRAWER_ANIMATION.menuScale.inputRange,
-            DRAWER_ANIMATION.menuScale.outputRange,
+            [tuning.menuMinimumScale, 1],
             Extrapolation.CLAMP,
           ),
         },
@@ -133,7 +159,7 @@ export function useDrawerController({
       borderRadius: interpolate(
         progress,
         [0, 1],
-        [0, surfaceCornerRadius],
+        [0, tuning.surfaceCornerRadius],
       ),
       transform: [{ translateX: translateX.value }],
     };
@@ -143,7 +169,7 @@ export function useDrawerController({
     borderRadius: interpolate(
       translateX.value / drawerWidth,
       [0, 1],
-      [0, surfaceCornerRadius],
+      [0, tuning.surfaceCornerRadius],
     ),
   }));
 
@@ -151,7 +177,7 @@ export function useDrawerController({
     opacity: interpolate(
       translateX.value / drawerWidth,
       DRAWER_ANIMATION.scrimOpacity.inputRange,
-      DRAWER_ANIMATION.scrimOpacity.outputRange,
+      [0, tuning.scrimMaximumOpacity],
     ),
   }));
 
