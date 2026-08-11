@@ -37,7 +37,6 @@ export const PALETTES = {
   light: {
     accent: APPLE_BLUE,
     accentText: "#FFFFFF",
-    appBackground: "#FFFFFF",
     menuBackground: "#FAFAFA",
     menuSelected: "#E0E0E0",
     muted: "#6E6E6E",
@@ -50,7 +49,6 @@ export const PALETTES = {
   dark: {
     accent: APPLE_BLUE,
     accentText: "#FFFFFF",
-    appBackground: "#000000",
     menuBackground: "#000000",
     menuSelected: "#262626",
     muted: "#A3A3A3",
@@ -64,9 +62,8 @@ export const PALETTES = {
 
 export const SWIPE_MENU_WIDTH_RATIO = 0.76;
 export const SWIPE_MENU_SURFACE_CORNER_RADIUS = 55;
-// box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 export const SWIPE_MENU_SURFACE_SHADOW =
-  "0px 7px 30px rgba(100, 100, 111, 0.2)";
+  "-8px 0 32px rgba(0, 0, 0, 0.12)";
 
 export const SWIPE_MENU_LAYOUT = {
   horizontalPadding: 20,

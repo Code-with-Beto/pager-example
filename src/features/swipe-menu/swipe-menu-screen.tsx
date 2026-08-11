@@ -47,7 +47,7 @@ export function SwipeMenuScreen() {
 
   return (
     <GestureDetector gesture={swipeGesture}>
-      <View style={[styles.root, { backgroundColor: colors.appBackground }]}>
+      <View style={[styles.root, { backgroundColor: colors.menuBackground }]}>
         <Animated.View
           accessibilityElementsHidden={!isMenuOpen}
           importantForAccessibility={

@@ -8,7 +8,6 @@ export type Chat = {
 export type ColorPalette = {
   accent: string;
   accentText: string;
-  appBackground: string;
   menuBackground: string;
   menuSelected: string;
   muted: string;
