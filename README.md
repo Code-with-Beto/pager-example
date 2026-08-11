@@ -6,7 +6,7 @@ The menu stays mounted underneath a single moving surface. Reanimated and Gestur
 
 ## Watch the demo 👇
 
-(coming soon)
+[Watch the CWB Swipe Menu demo on X](https://x.com/betomoedano/status/2087271429007966658?s=20)
 
 ## Setup
 
